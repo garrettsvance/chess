@@ -231,7 +231,7 @@ public class ChessPiece {
     static boolean isValidMove(ChessMove move) {
         int row = move.getEndPosition().getRow();
         int col = move.getEndPosition().getColumn();
-        return row >= 0 && row <= 7 && col >= 0 && col <= 7;
+        return row >= 1 && row < 9 && col >= 1 && col < 9;
     }
 
     /* Check if move is landing on your own team color */
