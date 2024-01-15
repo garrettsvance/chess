@@ -167,8 +167,13 @@ public class ChessPiece {
         for (int[] move : knightMoves) {
             int newRow = startRow + move[0];
             int newCol = startCol + move[1];
-
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+            if (validCheck(board, newMove)) {
+                moves.add(newMove);
+            }
         }
+        return moves;
     }
 
 
