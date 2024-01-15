@@ -93,16 +93,20 @@ public class ChessPiece {
         newCol = startCol;
         ChessPosition newPosition = new ChessPosition(newRow, newCol);
         ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-        if (validCheck(board, newMove)) {
-            moves.add(newMove);
+        if (isValidMove(newMove)) {
+            if (isOccupied(board, newMove).equals("empty")) {
+                moves.add(newMove);
+            }
         }
 
         if ((color == ChessGame.TeamColor.WHITE && startRow == 7) || (color == ChessGame.TeamColor.BLACK && startRow == 2)) {
             newRow = startRow + 2 * direction;
             newPosition = new ChessPosition(newRow, newCol);
             newMove = new ChessMove(myPosition, newPosition, null);
-            if (validCheck(board, newMove)) {
-                moves.add(newMove);
+            if (isValidMove(newMove)) {
+                if (isOccupied(board, newMove).equals("empty")) {
+                    moves.add(newMove);
+                }
             }
         }
 
@@ -112,16 +116,20 @@ public class ChessPiece {
         newCol = startCol + 1;
         newPosition = new ChessPosition(newRow, newCol);
         newMove = new ChessMove(myPosition, newPosition, null);
-        if (validCheck(board, newMove)) {
-            moves.add(newMove);
+        if (isValidMove(newMove)) {
+            if (isOccupied(board, newMove).equals("enemy")) {
+                moves.add(newMove);
+            }
         }
 
         newRow = startRow + direction;
         newCol = startRow - 1;
         newPosition = new ChessPosition(newRow, newCol);
         newMove = new ChessMove(myPosition, newPosition, null);
-        if (validCheck(board, newMove)) {
-            moves.add(newMove);
+        if (isValidMove(newMove)) {
+            if (isOccupied(board, newMove).equals("enemy")) {
+                moves.add(newMove);
+            }
         }
 
         //TODO: Promotion
@@ -138,15 +146,29 @@ public class ChessPiece {
         for (int i = 0; i < 8; i++) {
             ChessPosition newPosition = new ChessPosition(i, startCol);
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (validCheck(board, newMove)) {
-                moves.add(newMove);
+            if (isValidMove(newMove)) {
+                if (isOccupied(board, newMove).equals("empty")) {
+                    moves.add(newMove);
+                } else if (isOccupied(board, newMove).equals("enemy")) {
+                    moves.add(newMove);
+                    break;
+                } else {
+                    break;
+                }
             }
         }
         for (int j = 0; j < 8; j++) {
             ChessPosition newPosition = new ChessPosition(startRow, j);
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (validCheck(board, newMove)) {
-                moves.add(newMove);
+            if (isValidMove(newMove)) {
+                if (isOccupied(board, newMove).equals("empty")) {
+                    moves.add(newMove);
+                } else if (isOccupied(board, newMove).equals("enemy")) {
+                    moves.add(newMove);
+                    break;
+                } else {
+                    break;
+                }
             }
         }
         return moves;
@@ -169,8 +191,15 @@ public class ChessPiece {
             int newCol = startCol + move[1];
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (validCheck(board, newMove)) {
-                moves.add(newMove);
+            if (isValidMove(newMove)) {
+                if (isOccupied(board, newMove).equals("empty")) {
+                    moves.add(newMove);
+                } else if (isOccupied(board, newMove).equals("enemy")) {
+                    moves.add(newMove);
+                    break;
+                } else {
+                    break;
+                }
             }
         }
         return moves;
@@ -189,8 +218,15 @@ public class ChessPiece {
                 if (Math.abs(startRow - i) == Math.abs(startCol - j)) {
                     ChessPosition newPosition = new ChessPosition(i, j);
                     ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    if (validCheck(board, newMove)) {
-                        moves.add(newMove);
+                    if (isValidMove(newMove)) {
+                        if (isOccupied(board, newMove).equals("empty")) {
+                            moves.add(newMove);
+                        } else if (isOccupied(board, newMove).equals("enemy")) {
+                            moves.add(newMove);
+                            break;
+                        } else {
+                            break;
+                        }
                     }
                 }
             }
@@ -215,17 +251,20 @@ public class ChessPiece {
             int newCol = startCol + move[1];
             ChessPosition newPosition = new ChessPosition(newRow, newCol);
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (validCheck(board, newMove)) {
-                moves.add(newMove);
+            if (isValidMove(newMove)) {
+                if (isOccupied(board, newMove).equals("empty")) {
+                    moves.add(newMove);
+                } else if (isOccupied(board, newMove).equals("enemy")) {
+                    moves.add(newMove);
+                    break;
+                } else {
+                    break;
+                }
             }
         }
         return moves;
     }
 
-    /* Checks to see if move is executable within game rules */
-    private boolean validCheck(ChessBoard board, ChessMove move) {
-        return isValidMove(move) && !isTeam(board, move);
-    }
 
     /* Check if move is within bounds of board */
     static boolean isValidMove(ChessMove move) {
@@ -234,11 +273,17 @@ public class ChessPiece {
         return row >= 1 && row < 9 && col >= 1 && col < 9;
     }
 
-    /* Check if move is landing on your own team color */
-    static boolean isTeam(ChessBoard board, ChessMove move) {
+    /* Check if move is landing on an occupied space */
+    String isOccupied(ChessBoard board, ChessMove move) {
         ChessPiece originalPiece = board.getPiece(move.getStartPosition());
-        ChessPiece targetPiece = board.getPiece(move.getEndPosition());
-        return targetPiece == null || targetPiece.getTeamColor() != originalPiece.getTeamColor();
+        ChessPiece targetSpace = board.getPiece(move.getEndPosition());
+        if (targetSpace == null) {
+            return "empty";
+        } else if (originalPiece.getTeamColor() == targetSpace.getTeamColor()) {
+            return "teammate";
+        } else {
+            return "enemy";
+        }
     }
 
 
