@@ -222,15 +222,23 @@ public class ChessPiece {
         return moves;
     }
 
-
-    static boolean validCheck(ChessBoard board, ChessMove move) {
+    /* Checks to see if move is executable within game rules */
+    private boolean validCheck(ChessBoard board, ChessMove move) {
         return isValidMove(move) && !isTeam(board, move);
     }
 
-    private boolean isValidMove(ChessMove move) {
-        int row = move.getStartPosition().getRow();
-        int col = move.getStartPosition().getColumn();
-        return row >= 1 &&
+    /* Check if move is within bounds of board */
+    static boolean isValidMove(ChessMove move) {
+        int row = move.getEndPosition().getRow();
+        int col = move.getEndPosition().getColumn();
+        return row >= 0 && row <= 7 && col >= 0 && col <= 7;
+    }
+
+    /* Check if move is landing on your own team color */
+    static boolean isTeam(ChessBoard board, ChessMove move) {
+        ChessPiece originalPiece = board.getPiece(move.getStartPosition());
+        ChessPiece targetPiece = board.getPiece(move.getEndPosition());
+        return targetPiece == null || targetPiece.getTeamColor() != originalPiece.getTeamColor();
     }
 
 
