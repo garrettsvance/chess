@@ -177,4 +177,61 @@ public class ChessPiece {
     }
 
 
+    // Bishop
+
+    private Collection<ChessMove> getBishopMoves(ChessBoard board, ChessPosition myPosition) {
+        List<ChessMove> moves = new ArrayList<>();
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (Math.abs(startRow - i) == Math.abs(startCol - j)) {
+                    ChessPosition newPosition = new ChessPosition(i, j);
+                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                    if (validCheck(board, newMove)) {
+                        moves.add(newMove);
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+
+
+    // King
+
+    private Collection<ChessMove> getKingMoves(ChessBoard board, ChessPosition myPosition) {
+        List<ChessMove> moves = new ArrayList<>();
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        int[][] kingMoves = {
+                {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}
+        };
+
+        for (int[] move: kingMoves) {
+            int newRow = startRow + move[0];
+            int newCol = startCol + move[1];
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+            if (validCheck(board, newMove)) {
+                moves.add(newMove);
+            }
+        }
+        return moves;
+    }
+
+
+    static boolean validCheck(ChessBoard board, ChessMove move) {
+        return isValidMove(move) && !isTeam(board, move);
+    }
+
+    private boolean isValidMove(ChessMove move) {
+        int row = move.getStartPosition().getRow();
+        int col = move.getStartPosition().getColumn();
+        return row >= 1 &&
+    }
+
+
 }
