@@ -124,8 +124,52 @@ public class ChessPiece {
             moves.add(newMove);
         }
 
-        // Promotion
-
-        if ((color == ChessGame.TeamColor.WHITE && start))
+        //TODO: Promotion
+        return moves;
     }
+
+
+    // ROOK
+    private Collection<ChessMove> getRookMoves(ChessBoard board, ChessPosition myPosition) {
+        List<ChessMove> moves = new ArrayList<>();
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        for (int i = 0; i < 8; i++) {
+            ChessPosition newPosition = new ChessPosition(i, startCol);
+            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+            if (validCheck(board, newMove)) {
+                moves.add(newMove);
+            }
+        }
+        for (int j = 0; j < 8; j++) {
+            ChessPosition newPosition = new ChessPosition(startRow, j);
+            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+            if (validCheck(board, newMove)) {
+                moves.add(newMove);
+            }
+        }
+        return moves;
+    }
+
+
+    // Knight
+
+    private Collection<ChessMove> getKnightMoves(ChessBoard board, ChessPosition myPosition) {
+        List<ChessMove> moves = new ArrayList<>();
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        int[][] knightMoves = {
+                {-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}
+        };
+
+        for (int[] move : knightMoves) {
+            int newRow = startRow + move[0];
+            int newCol = startCol + move[1];
+
+        }
+    }
+
+
 }
