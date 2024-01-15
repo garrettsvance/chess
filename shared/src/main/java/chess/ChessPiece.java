@@ -9,8 +9,8 @@ import java.util.*;
  */
 public class ChessPiece {
 
-    private PieceType pieceType;
-    private ChessGame.TeamColor pieceColor;
+    private final PieceType pieceType;
+    private final ChessGame.TeamColor pieceColor;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceType = type;
@@ -33,7 +33,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return (pieceColor == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        return pieceColor;
     }
 
     /**
@@ -53,7 +53,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
 
-        if (piece == null) {
+        if (piece.getPieceType() == null) {
             return Collections.emptyList();
         }
 
@@ -213,20 +213,24 @@ public class ChessPiece {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (Math.abs(startRow - i) == Math.abs(startCol - j)) {
-                    ChessPosition newPosition = new ChessPosition(i, j);
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    if (isValidMove(newMove)) {
-                        if (isOccupied(board, newMove).equals("empty")) {
-                            moves.add(newMove);
-                        } else if (isOccupied(board, newMove).equals("enemy")) {
-                            moves.add(newMove);
-                            break;
-                        } else {
-                            break;
-                        }
+        int[][] bishopMoves = {
+                {1, 1}, {-1, 1}, {-1, -1}, {1, -1}
+        };
+
+        for (int[] move: bishopMoves) {
+            for (int i = 1; i < 8; i++) {
+                int newRow = startRow + i * move[0];
+                int newCol = startCol + i * move[1];
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                if (isValidMove(newMove)) {
+                    if (isOccupied(board, newMove).equals("empty")) {
+                        moves.add(newMove);
+                    } else if (isOccupied(board, newMove).equals("enemy")) {
+                        moves.add(newMove);
+                        break;
+                    } else {
+                        break;
                     }
                 }
             }
@@ -270,7 +274,7 @@ public class ChessPiece {
     static boolean isValidMove(ChessMove move) {
         int row = move.getEndPosition().getRow();
         int col = move.getEndPosition().getColumn();
-        return row >= 1 && row < 9 && col >= 1 && col < 9;
+        return (row > 0 && row <= 8) && (col > 0 && col <= 8);
     }
 
     /* Check if move is landing on an occupied space */
@@ -286,5 +290,16 @@ public class ChessPiece {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceType == that.pieceType && pieceColor == that.pieceColor;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceType, pieceColor);
+    }
 }

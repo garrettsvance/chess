@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -8,10 +10,10 @@ package chess;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board;
+    private ChessPiece[][] board;
 
     public ChessBoard() {
-        board = new ChessPiece[8][8];
+        board = new ChessPiece[9][9];
     }
 
     /**
@@ -21,8 +23,8 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        int row = position.getRow()-1;
-        int col = position.getColumn()-1;
+        int row = position.getRow();
+        int col = position.getColumn();
         board[row][col] = piece;
     }
 
@@ -34,9 +36,13 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        int row = position.getRow()-1;
-        int col = position.getColumn()-1;
-        return board[row][col];
+        int row = position.getRow();
+        int col = position.getColumn();
+        if (board[row][col] == null) {
+            return null;
+        } else {
+            return board[row][col];
+        }
     }
 
     /**
@@ -44,6 +50,8 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+
+        board = new ChessPiece[9][9];
 
         // Pawn
         for (int i = 1; i < 9; i++) {
@@ -76,5 +84,18 @@ public class ChessBoard {
         // KING
         board[1][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         board[8][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }
