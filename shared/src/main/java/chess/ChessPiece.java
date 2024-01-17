@@ -90,9 +90,12 @@ public class ChessPiece {
 
         ChessPosition newPosition = new ChessPosition(startRow + direction, startCol);
         ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-        // Check for promotion
+        // Check for promotion/get moves
         if (promotionCheck(startRow) && isValidMove(newMove) && isOccupied(board, newMove).equals("empty")) {
-            getPromotionMoves()
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
         }
 
 
