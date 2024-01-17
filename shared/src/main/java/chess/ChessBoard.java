@@ -51,7 +51,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
-        board = new ChessPiece[9][9];
+        board = new ChessPiece[9][9]; //Index 8 out of bounds for length 8 fixed when using 9
 
         // Pawn
         for (int i = 1; i < 9; i++) {
