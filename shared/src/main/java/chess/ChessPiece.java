@@ -81,18 +81,21 @@ public class ChessPiece {
 
     // Pawn
 
-    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition) {
         List<ChessMove> moves = new ArrayList<>();
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        int direction = (color == ChessGame.TeamColor.WHITE) ? -1 : 1;
-        int newRow, newCol;
+        int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
 
-        newRow = startRow + direction;
-        newCol = startCol;
-        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+        ChessPosition newPosition = new ChessPosition(startRow + direction, startCol);
         ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+        // Check for promotion
+        if (promotionCheck(startRow) && isValidMove(newMove) && isOccupied(board, newMove).equals("empty")) {
+            getPromotionMoves()
+        }
+
+
         if (isValidMove(newMove)) {
             if (isOccupied(board, newMove).equals("empty")) {
                 moves.add(newMove);
@@ -134,6 +137,14 @@ public class ChessPiece {
 
         //TODO: Promotion
         return moves;
+    }
+
+    private boolean promotionCheck(int row) {
+        return (pieceColor == ChessGame.TeamColor.WHITE && row == 7) || (pieceColor == ChessGame.TeamColor.BLACK && row == 2);
+    }
+
+    private boolean firstMove(int row) {
+        return (pieceColor == ChessGame.TeamColor.WHITE && row == 2) || (pieceColor == ChessGame.TeamColor.BLACK && row == 7);
     }
 
 
@@ -289,6 +300,8 @@ public class ChessPiece {
             return "enemy";
         }
     }
+
+
 
     @Override
     public boolean equals(Object o) {
