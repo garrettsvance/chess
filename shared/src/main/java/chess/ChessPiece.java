@@ -59,7 +59,7 @@ public class ChessPiece {
 
         switch(piece.getPieceType()) {
             case PAWN:
-                return (getPawnMoves(board, myPosition, piece.getTeamColor()));
+                return (getPawnMoves(board, myPosition));
             case ROOK:
                 return (getRookMoves(board, myPosition));
             case KNIGHT:
@@ -86,7 +86,7 @@ public class ChessPiece {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? -1 : 1;
+        int direction = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
 
         ChessPosition newPosition = new ChessPosition(startRow + direction, startCol);
         ChessMove newMove = new ChessMove(myPosition, newPosition, null);
@@ -96,7 +96,7 @@ public class ChessPiece {
             moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
             moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
             moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-        } else if (firstMove(startRow)) {
+        } else if ((pieceColor == ChessGame.TeamColor.WHITE && startRow == 2) || (pieceColor == ChessGame.TeamColor.BLACK && startRow == 7)) {
             for (int i = 1; i <= 2; i++) {
                 newPosition = new ChessPosition(startRow + direction * i, startCol);
                 newMove = new ChessMove(myPosition, newPosition, null);
@@ -111,25 +111,35 @@ public class ChessPiece {
                 moves.add(newMove);
             }
         }
-
         // Check for diagonal movement
         int[][] pawnAttack = {
                 {1, 1}, {1, -1}
         };
 
         for (int[] attack: pawnAttack) {
+            int newRow = startRow + direction * attack[0];
+            int newCol = startCol + direction * attack[1];
+
+            newPosition = new ChessPosition(newRow, newCol);
+            newMove = new ChessMove(myPosition, newPosition, null);
+            if (isValidMove(newMove) && isOccupied(board, newMove).equals("enemy")) {
+                if (promotionCheck(newRow)) {
+                    moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                } else {
+                    moves.add(newMove);
+                }
+            }
 
         }
-
         return moves;
     }
 
+    // Pawn Helper Function
     private boolean promotionCheck(int row) {
         return (pieceColor == ChessGame.TeamColor.WHITE && row == 7) || (pieceColor == ChessGame.TeamColor.BLACK && row == 2);
-    }
-
-    private boolean firstMove(int row) {
-        return (pieceColor == ChessGame.TeamColor.WHITE && row == 2) || (pieceColor == ChessGame.TeamColor.BLACK && row == 7);
     }
 
 
@@ -139,31 +149,25 @@ public class ChessPiece {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        for (int i = 0; i < 8; i++) {
-            ChessPosition newPosition = new ChessPosition(i, startCol);
-            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (isValidMove(newMove)) {
-                if (isOccupied(board, newMove).equals("empty")) {
-                    moves.add(newMove);
-                } else if (isOccupied(board, newMove).equals("enemy")) {
-                    moves.add(newMove);
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-        for (int j = 0; j < 8; j++) {
-            ChessPosition newPosition = new ChessPosition(startRow, j);
-            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (isValidMove(newMove)) {
-                if (isOccupied(board, newMove).equals("empty")) {
-                    moves.add(newMove);
-                } else if (isOccupied(board, newMove).equals("enemy")) {
-                    moves.add(newMove);
-                    break;
-                } else {
-                    break;
+        int[][] rookMoves = {
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+        };
+
+        for (int[] move : rookMoves) {
+            for (int i = 1; i < 9; i++) {
+                int newRow = startRow + i * move[0];
+                int newCol = startCol + i * move[1];
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                if (isValidMove(newMove)) {
+                    if (isOccupied(board, newMove).equals("empty")) {
+                        moves.add(newMove);
+                    } else if (isOccupied(board, newMove).equals("enemy")) {
+                        moves.add(newMove);
+                        break;
+                    } else {
+                        break;
+                    }
                 }
             }
         }
