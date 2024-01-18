@@ -96,49 +96,31 @@ public class ChessPiece {
             moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
             moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
             moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-        }
-
-
-        if (isValidMove(newMove)) {
-            if (isOccupied(board, newMove).equals("empty")) {
-                moves.add(newMove);
-            }
-        }
-
-        if ((color == ChessGame.TeamColor.WHITE && startRow == 7) || (color == ChessGame.TeamColor.BLACK && startRow == 2)) {
-            newRow = startRow + 2 * direction;
-            newPosition = new ChessPosition(newRow, newCol);
-            newMove = new ChessMove(myPosition, newPosition, null);
-            if (isValidMove(newMove)) {
-                if (isOccupied(board, newMove).equals("empty")) {
+        } else if (firstMove(startRow)) {
+            for (int i = 1; i <= 2; i++) {
+                newPosition = new ChessPosition(startRow + direction * i, startCol);
+                newMove = new ChessMove(myPosition, newPosition, null);
+                if (isValidMove(newMove) && isOccupied(board, newMove).equals("empty")) {
                     moves.add(newMove);
                 }
             }
-        }
-
-        // Capture
-
-        newRow = startRow + direction;
-        newCol = startCol + 1;
-        newPosition = new ChessPosition(newRow, newCol);
-        newMove = new ChessMove(myPosition, newPosition, null);
-        if (isValidMove(newMove)) {
-            if (isOccupied(board, newMove).equals("enemy")) {
+        } else {
+            newPosition = new ChessPosition(startRow + direction, startCol);
+            newMove = new ChessMove(myPosition, newPosition, null);
+            if (isValidMove(newMove) && isOccupied(board, newMove).equals("empty")) {
                 moves.add(newMove);
             }
         }
 
-        newRow = startRow + direction;
-        newCol = startRow - 1;
-        newPosition = new ChessPosition(newRow, newCol);
-        newMove = new ChessMove(myPosition, newPosition, null);
-        if (isValidMove(newMove)) {
-            if (isOccupied(board, newMove).equals("enemy")) {
-                moves.add(newMove);
-            }
+        // Check for diagonal movement
+        int[][] pawnAttack = {
+                {1, 1}, {1, -1}
+        };
+
+        for (int[] attack: pawnAttack) {
+
         }
 
-        //TODO: Promotion
         return moves;
     }
 
