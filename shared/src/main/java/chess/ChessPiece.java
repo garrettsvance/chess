@@ -123,7 +123,7 @@ public class ChessPiece {
             newPosition = new ChessPosition(newRow, newCol);
             newMove = new ChessMove(myPosition, newPosition, null);
             if (isValidMove(newMove) && isOccupied(board, newMove).equals("enemy")) {
-                if (promotionCheck(newRow)) {
+                if (promotionCheck(newRow)) { // Promotion Capture
                     moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
                     moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
                     moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
@@ -132,7 +132,6 @@ public class ChessPiece {
                     moves.add(newMove);
                 }
             }
-
         }
         return moves;
     }
@@ -154,7 +153,8 @@ public class ChessPiece {
         };
 
         for (int[] move : rookMoves) {
-            for (int i = 1; i < 9; i++) {
+            boolean end = false;
+            for (int i = 1; i < 9 && !end; i++) {
                 int newRow = startRow + i * move[0];
                 int newCol = startCol + i * move[1];
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
@@ -164,9 +164,9 @@ public class ChessPiece {
                         moves.add(newMove);
                     } else if (isOccupied(board, newMove).equals("enemy")) {
                         moves.add(newMove);
-                        break;
+                        end = true;
                     } else {
-                        break;
+                        end = true;
                     }
                 }
             }
@@ -196,9 +196,6 @@ public class ChessPiece {
                     moves.add(newMove);
                 } else if (isOccupied(board, newMove).equals("enemy")) {
                     moves.add(newMove);
-                    break;
-                } else {
-                    break;
                 }
             }
         }
@@ -218,7 +215,8 @@ public class ChessPiece {
         };
 
         for (int[] move: bishopMoves) {
-            for (int i = 1; i < 8; i++) {
+            boolean end = false;
+            for (int i = 1; i < 8 && !end; i++) {
                 int newRow = startRow + i * move[0];
                 int newCol = startCol + i * move[1];
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
@@ -228,9 +226,9 @@ public class ChessPiece {
                         moves.add(newMove);
                     } else if (isOccupied(board, newMove).equals("enemy")) {
                         moves.add(newMove);
-                        break;
+                        end = true;
                     } else {
-                        break;
+                        end = true;
                     }
                 }
             }
@@ -260,9 +258,6 @@ public class ChessPiece {
                     moves.add(newMove);
                 } else if (isOccupied(board, newMove).equals("enemy")) {
                     moves.add(newMove);
-                    break;
-                } else {
-                    break;
                 }
             }
         }
@@ -289,8 +284,6 @@ public class ChessPiece {
             return "enemy";
         }
     }
-
-
 
     @Override
     public boolean equals(Object o) {
