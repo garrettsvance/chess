@@ -10,6 +10,10 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    TeamColor teamColor;
+    ChessBoard gameBoard;
+    ChessBoard tempBoard;
+
     public ChessGame() {
 
     }
@@ -18,7 +22,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return teamColor;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamColor = team;
     }
 
     /**
@@ -79,6 +83,19 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+
+    private ChessPosition kingPosition(TeamColor teamColor) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                if ((tempBoard.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) && (tempBoard.getPiece(position).getTeamColor() == teamColor)) {
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -96,7 +113,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        gameBoard = board;
     }
 
     /**
@@ -105,6 +122,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return gameBoard;
     }
 }
