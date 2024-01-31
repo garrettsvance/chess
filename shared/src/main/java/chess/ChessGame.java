@@ -3,6 +3,8 @@ package chess;
 import java.util.Collection;
 import java.util.HashSet;
 
+import static chess.ChessPiece.*;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -67,7 +69,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        var startPosition = move.getStartPosition();
+        var endPosition = move.getEndPosition();
+        if (!isValidMove(move)) {
+            throw new InvalidMoveException("Move is out of bounds");
+        } else if (gameBoard.getPiece(startPosition) == null) {
+            throw new InvalidMoveException("Selected space is empty on chessboard");
+        } else if (teamColor != getTeamTurn()) {
+            throw new InvalidMoveException("Wrong team color selected");
+        }
     }
 
     /**
