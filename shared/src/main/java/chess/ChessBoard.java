@@ -16,6 +16,14 @@ public class ChessBoard {
         board = new ChessPiece[9][9];
     }
 
+    public ChessBoard(ChessBoard originalBoard) {
+        try { // if clone doesn't work, just loop through board and .copy each space
+            ChessBoard copiedBoard = (ChessBoard) originalBoard.clone();
+        } catch (CloneNotSupportedException e)  {
+            System.out.println("Clone support exception");
+        }
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
