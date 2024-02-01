@@ -76,8 +76,8 @@ public class ChessGame {
         } else if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
         } else if (teamColor != getTeamTurn()) {
-            throw new InvalidMoveException("Wrong team color selected");
-        }
+            throw new InvalidMoveException("Wrong team selected");
+        } // king in check, check
     }
 
     /**
@@ -87,7 +87,21 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = kingPosition(teamColor);
+        ChessBoard tempBoard = new ChessBoard(gameBoard); //TODO: check for copy
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition foePosition = new ChessPosition(i, j);
+                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamColor) {
+                    for (ChessMove checkMove : tempBoard.getPiece(foePosition).pieceMoves(tempBoard, foePosition)) {
+                        if (checkMove.getEndPosition() == kingPosition) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
