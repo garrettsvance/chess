@@ -77,7 +77,9 @@ public class ChessGame {
             throw new InvalidMoveException("Selected space is empty on chessboard");
         } else if (teamColor != getTeamTurn()) {
             throw new InvalidMoveException("Wrong team selected");
-        } // king in check, check
+        } else if (isInCheck(getTeamTurn())) {
+            throw new InvalidMoveException("King in Check");
+        }
     }
 
     /**
