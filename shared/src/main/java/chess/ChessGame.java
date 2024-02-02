@@ -71,6 +71,8 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var startPosition = move.getStartPosition();
         var endPosition = move.getEndPosition();
+        ChessPiece promotionPiece;
+
         if (!isValidMove(move)) {
             throw new InvalidMoveException("Move is out of bounds");
         } else if (gameBoard.getPiece(startPosition) == null) {
@@ -79,6 +81,9 @@ public class ChessGame {
             throw new InvalidMoveException("Wrong team selected");
         } else if (isInCheck(getTeamTurn())) {
             throw new InvalidMoveException("King in Check");
+        }
+        if ((teamColor == TeamColor.WHITE && endPosition.getRow() == 8) || teamColor == TeamColor.BLACK && endPosition.getRow() == 1) {
+            promotionPiece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
         }
     }
 

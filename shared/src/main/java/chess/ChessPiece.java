@@ -139,7 +139,7 @@ public class ChessPiece {
     }
 
     // Pawn Helper Function
-    private boolean promotionCheck(int row) {
+    public boolean promotionCheck(int row) {
         return (pieceColor == ChessGame.TeamColor.WHITE && row == 8) || (pieceColor == ChessGame.TeamColor.BLACK && row == 1);
     }
 
