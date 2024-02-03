@@ -72,23 +72,26 @@ public class ChessGame {
         var startPosition = move.getStartPosition();
         var endPosition = move.getEndPosition();
         ChessPiece promotionPiece;
-        PieceType playerPiece = gameBoard.getPiece(startPosition).getPieceType();
+        ChessPiece playerPiece = gameBoard.getPiece(startPosition);
 
-        if (!isValidMove(move)) {
-            throw new InvalidMoveException("Move is out of bounds");
-        } else if (gameBoard.getPiece(startPosition) == null) {
+        if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
+        } else if (!isValidMove(move)) {
+            throw new InvalidMoveException("Move is out of bounds");
         } else if (teamColor != getTeamTurn()) {
             throw new InvalidMoveException("Wrong team selected");
         } else if (isInCheck(getTeamTurn())) {
             throw new InvalidMoveException("King in Check");
         }
-        if (playerPiece == ChessPiece.PieceType.PAWN) {
+        if (playerPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
             if ((teamColor == TeamColor.WHITE && endPosition.getRow() == 8) || teamColor == TeamColor.BLACK && endPosition.getRow() == 1) {
                 promotionPiece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
-
+                gameBoard.movePiece(move, promotionPiece);
             }
+        } else {
+            gameBoard.movePiece(move, playerPiece);
         }
+        setTeamTurn((getTeamTurn() == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE);
     }
 
     /**
