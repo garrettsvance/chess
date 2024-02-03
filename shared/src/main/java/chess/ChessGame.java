@@ -16,7 +16,9 @@ public class ChessGame {
     TeamColor teamColor;
     ChessBoard gameBoard;
     ChessBoard tempBoard;
+    ChessBoard checkBoard;
 
+    boolean checkBoardCheck = false;
     public ChessGame() {
         gameBoard = new ChessBoard();
         teamColor = TeamColor.WHITE;
@@ -102,7 +104,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = kingPosition(teamColor);
-        ChessBoard tempBoard = new ChessBoard(gameBoard); //TODO: check for copy
+        tempBoard = checkBoardCheck ? checkBoard : new ChessBoard(gameBoard); //TODO: check for copy. is this copying fresh board, or current?
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition foePosition = new ChessPosition(i, j);
@@ -124,21 +126,22 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor)  {
+    public boolean isInCheckmate(TeamColor teamColor)  { // create an integrated for loop for each king move, and then call "is in check" for each one
         ChessPosition kingPosition = kingPosition(teamColor);
-        ChessBoard tempBoard = new ChessBoard(gameBoard);
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPosition foePosition = new ChessPosition(i, j);
-                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamColor) {
-                    for (ChessMove checkMove : tempBoard.getPiece(foePosition).pieceMoves(tempBoard, foePosition)) {
-                        if (checkMove.getEndPosition() == kingPosition) {
-                            return true;
-                        }
-                    }
-                }
+        ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
+        ChessBoard checkBoard = new ChessBoard(gameBoard);
+        checkBoardCheck = true;
+        for (ChessMove kingMoves : tempBoard.getPiece(kingPosition).pieceMoves(tempBoard, kingPosition)) {
+            var tempRow = kingMoves.getEndPosition().getRow();
+            var tempCol = kingMoves.getEndPosition().getColumn();
+            ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
+            ChessMove tempKingMove = new ChessMove(kingPosition, newPosition, null);
+            checkBoard.movePiece(tempKingMove, kingPiece);
+            if (isInCheck(teamColor)) {
+                return true;
             }
         }
+        checkBoardCheck = false;
         return false;
     }
 
