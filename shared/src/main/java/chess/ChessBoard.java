@@ -16,12 +16,28 @@ public class ChessBoard {
         board = new ChessPiece[9][9];
     }
 
+//    public ChessBoard(ChessBoard originalBoard) {
+//        try { // if clone doesn't work, just loop through board and .copy each space
+//            ChessBoard copiedBoard = (ChessBoard) originalBoard.clone();
+//        } catch (CloneNotSupportedException e)  {
+//            System.out.println("Clone support exception");
+//        }
+//    }
+
     public ChessBoard(ChessBoard originalBoard) {
-        try { // if clone doesn't work, just loop through board and .copy each space
-            ChessBoard copiedBoard = (ChessBoard) originalBoard.clone();
-        } catch (CloneNotSupportedException e)  {
-            System.out.println("Clone support exception");
+        this.board = originalBoard.copy();
+    }
+
+    private ChessPiece[][] copy() {
+        ChessPiece[][] copiedBoard = new ChessPiece[9][9];
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if (board[i][j] != null) {
+                    copiedBoard[i][j] = board[i][j].copy();
+                }
+            }
         }
+        return copiedBoard;
     }
 
     /**
