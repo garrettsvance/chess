@@ -23,6 +23,7 @@ public class ChessGame {
     public ChessGame() {
         gameBoard = new ChessBoard();
         teamColor = TeamColor.WHITE;
+        tempBoard = new ChessBoard(gameBoard);
     }
 
     /**
@@ -215,5 +216,16 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(teamColor, gameBoard, tempBoard, checkBoard, checkBoardCheck);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "teamColor=" + teamColor +
+                ", gameBoard=" + gameBoard +
+                ", tempBoard=" + tempBoard +
+                ", checkBoard=" + checkBoard +
+                ", checkBoardCheck=" + checkBoardCheck +
+                '}';
     }
 }
