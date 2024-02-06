@@ -78,7 +78,8 @@ public class ChessGame {
         ChessPiece promotionPiece;
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
         tempBoard = new ChessBoard(gameBoard);
-
+        teamTurn = getTeamTurn();
+        System.out.println("Making move for the " + teamTurn + " team.");
         if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
         } else if (!isValidMove(move)) {
@@ -178,7 +179,7 @@ public class ChessGame {
                 }
             }
         }
-        System.out.println("King not found");
+        System.out.println(teamTurn + " king not found");
         return null;
     }
 
