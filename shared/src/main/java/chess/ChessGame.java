@@ -108,6 +108,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamTurn) {
         ChessPosition kingPosition = kingPosition(teamTurn);
+        if (kingPosition == null) {
+            return false;
+        }
         System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
         tempBoard = checkBoardCheck ? checkBoard : new ChessBoard(gameBoard); //TODO: check for copy. is this copying fresh board, or current?
         for (int i = 1; i <= 8; i++) {
