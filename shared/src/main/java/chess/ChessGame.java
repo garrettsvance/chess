@@ -79,7 +79,7 @@ public class ChessGame {
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
         tempBoard = new ChessBoard(gameBoard);
         teamTurn = getTeamTurn();
-        System.out.println("Making move for the " + teamTurn + " team.");
+        //System.out.println("Making move for the " + teamTurn + " team.");
         if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
         } else if (!isValidMove(move)) {
@@ -90,9 +90,14 @@ public class ChessGame {
             throw new InvalidMoveException("King in Check");
         }
         if (playerPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            System.out.println("Pawn is in play");
             if ((teamTurn == TeamColor.WHITE && endPosition.getRow() == 8) || teamTurn == TeamColor.BLACK && endPosition.getRow() == 1) {
                 promotionPiece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
                 gameBoard.movePiece(move, promotionPiece);
+            } else {
+                gameBoard.movePiece(move, playerPiece);
+                String resultBoard = toString();
+                System.out.println(resultBoard);
             }
         } else {
             gameBoard.movePiece(move, playerPiece);
@@ -113,21 +118,9 @@ public class ChessGame {
         if (kingPosition == null) {
             return false;
         }
-        System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
+        //System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
         tempBoard = checkBoardCheck ? checkBoard : new ChessBoard(gameBoard); //TODO: check for copy. is this copying fresh board, or current?
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPosition foePosition = new ChessPosition(i, j);
-                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamTurn) {
-                    for (ChessMove checkMove : tempBoard.getPiece(foePosition).pieceMoves(tempBoard, foePosition)) {
-                        if (checkMove.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return checkFoe(teamTurn, kingPosition);
     }
 
     /**
@@ -138,8 +131,15 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamTurn) {
         ChessPosition kingPosition = kingPosition(teamTurn);
-        System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
+        if (kingPosition == null) {
+            return false;
+        }
+        //System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
         tempBoard = new ChessBoard(gameBoard);
+        return checkFoe(teamTurn, kingPosition);
+    }
+
+    private boolean checkFoe(TeamColor teamTurn, ChessPosition kingPosition) {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition foePosition = new ChessPosition(i, j);
@@ -184,7 +184,7 @@ public class ChessGame {
                 }
             }
         }
-        System.out.println(teamTurn + " king not found");
+        //System.out.println(teamTurn + " king not found");
         return null;
     }
 
