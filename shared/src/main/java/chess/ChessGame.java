@@ -74,9 +74,10 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var startPosition = move.getStartPosition();
-        var endPosition = move.getEndPosition();
+        var endRow = move.getEndPosition().getRow();
         ChessPiece promotionPiece;
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
+        TeamColor pieceColor = playerPiece.getTeamColor();
         tempBoard = new ChessBoard(gameBoard);
         teamTurn = getTeamTurn();
         //System.out.println("Making move for the " + teamTurn + " team.");
@@ -89,22 +90,20 @@ public class ChessGame {
         } else if (isInCheck(getTeamTurn())) {
             throw new InvalidMoveException("King in Check");
         }
-        if (playerPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            System.out.println("Pawn is in play");
-            if ((teamTurn == TeamColor.WHITE && endPosition.getRow() == 8) || teamTurn == TeamColor.BLACK && endPosition.getRow() == 1) {
+        if ((playerPiece.getPieceType() == ChessPiece.PieceType.PAWN) && (promotionCheck(endRow, pieceColor))) {
+                //System.out.println("Pawn is in play");
                 promotionPiece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
                 gameBoard.movePiece(move, promotionPiece);
-            } else {
-                gameBoard.movePiece(move, playerPiece);
-                String resultBoard = toString();
-                System.out.println(resultBoard);
-            }
         } else {
             gameBoard.movePiece(move, playerPiece);
             String resultBoard = toString();
             System.out.println(resultBoard);
         }
         setTeamTurn((getTeamTurn() == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE);
+    }
+
+    public boolean promotionCheck(int row, TeamColor pieceColor) {
+        return (pieceColor == ChessGame.TeamColor.WHITE && row == 8) || (pieceColor == ChessGame.TeamColor.BLACK && row == 1);
     }
 
     /**
