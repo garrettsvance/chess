@@ -96,6 +96,8 @@ public class ChessGame {
             }
         } else {
             gameBoard.movePiece(move, playerPiece);
+            String resultBoard = toString();
+            System.out.println(resultBoard);
         }
         setTeamTurn((getTeamTurn() == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE);
     }
@@ -238,6 +240,8 @@ public class ChessGame {
         ChessGame chessGame = (ChessGame) o;
         return checkBoardCheck == chessGame.checkBoardCheck && teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(tempBoard, chessGame.tempBoard) && Objects.equals(checkBoard, chessGame.checkBoard);
     }
+
+
 
     @Override
     public int hashCode() {

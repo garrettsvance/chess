@@ -74,6 +74,44 @@ public class ChessBoard {
         var endPosition = move.getEndPosition();
         board[endPosition.getRow()][endPosition.getColumn()] = chessPiece;
         board[startPosition.getRow()][startPosition.getColumn()] = null;
+        // debugging
+        System.out.println("Current Board:\n");
+        printBoard();
+    }
+
+    public String getPieceAbbr(int i, int j) {
+        if (board[i][j] != null) {
+            if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                return switch (board[i][j].getPieceType()) {
+                    case KING -> "K";
+                    case QUEEN -> "Q";
+                    case BISHOP -> "B";
+                    case KNIGHT -> "N";
+                    case ROOK -> "R";
+                    case PAWN -> "P";
+                };
+            } else {
+                return switch (board[i][j].getPieceType()) {
+                    case KING -> "k";
+                    case QUEEN -> "q";
+                    case BISHOP -> "b";
+                    case KNIGHT -> "n";
+                    case ROOK -> "r";
+                    case PAWN -> "p";
+                };
+            }
+        }
+        return null;
+    }
+
+    public void printBoard() {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+               String pieceAbbr = getPieceAbbr(i, j);
+               System.out.print("| " + (board[i][j] != null ? pieceAbbr : " ") + " ");
+            }
+            System.out.println("|");
+        }
     }
 
     /**
