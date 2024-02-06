@@ -75,7 +75,7 @@ public class ChessBoard {
         board[endPosition.getRow()][endPosition.getColumn()] = chessPiece;
         board[startPosition.getRow()][startPosition.getColumn()] = null;
         // debugging
-        System.out.println("Current Board:\n");
+        System.out.println("Current Board:");
         printBoard();
     }
 
