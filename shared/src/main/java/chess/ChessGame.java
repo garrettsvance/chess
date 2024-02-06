@@ -14,7 +14,7 @@ import static chess.ChessPiece.*;
  */
 public class ChessGame {
 
-    TeamColor teamColor;
+    TeamColor teamTurn;
     ChessBoard gameBoard;
     ChessBoard tempBoard;
     ChessBoard checkBoard;
@@ -22,7 +22,7 @@ public class ChessGame {
     boolean checkBoardCheck = false;
     public ChessGame() {
         gameBoard = new ChessBoard();
-        teamColor = TeamColor.WHITE;
+        teamTurn = TeamColor.WHITE;
         tempBoard = new ChessBoard(gameBoard);
     }
 
@@ -30,7 +30,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return teamColor;
+        return teamTurn;
     }
 
     /**
@@ -39,7 +39,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        teamColor = team;
+        teamTurn = team;
     }
 
     /**
@@ -61,7 +61,7 @@ public class ChessGame {
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
         if (playerPiece != null) {
             return playerPiece.pieceMoves(this.getBoard(), startPosition);
-            } else {
+        } else {
             return null;
         }
     }
@@ -77,18 +77,19 @@ public class ChessGame {
         var endPosition = move.getEndPosition();
         ChessPiece promotionPiece;
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
+        tempBoard = new ChessBoard(gameBoard);
 
         if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
         } else if (!isValidMove(move)) {
             throw new InvalidMoveException("Move is out of bounds");
-        } else if (teamColor != getTeamTurn()) {
+        } else if (teamTurn != getTeamTurn()) {
             throw new InvalidMoveException("Wrong team selected");
         } else if (isInCheck(getTeamTurn())) {
             throw new InvalidMoveException("King in Check");
         }
         if (playerPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            if ((teamColor == TeamColor.WHITE && endPosition.getRow() == 8) || teamColor == TeamColor.BLACK && endPosition.getRow() == 1) {
+            if ((teamTurn == TeamColor.WHITE && endPosition.getRow() == 8) || teamTurn == TeamColor.BLACK && endPosition.getRow() == 1) {
                 promotionPiece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
                 gameBoard.movePiece(move, promotionPiece);
             }
@@ -101,18 +102,19 @@ public class ChessGame {
     /**
      * Determines if the given team is in check
      *
-     * @param teamColor which team to check for check
+     * @param teamTurn which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition = kingPosition(teamColor);
+    public boolean isInCheck(TeamColor teamTurn) {
+        ChessPosition kingPosition = kingPosition(teamTurn);
+        System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
         tempBoard = checkBoardCheck ? checkBoard : new ChessBoard(gameBoard); //TODO: check for copy. is this copying fresh board, or current?
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition foePosition = new ChessPosition(i, j);
-                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamColor) {
+                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamTurn) {
                     for (ChessMove checkMove : tempBoard.getPiece(foePosition).pieceMoves(tempBoard, foePosition)) {
-                        if (checkMove.getEndPosition() == kingPosition) {
+                        if (checkMove.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                     }
@@ -125,11 +127,30 @@ public class ChessGame {
     /**
      * Determines if the given team is in checkmate
      *
-     * @param teamColor which team to check for checkmate
+     * @param teamTurn which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor)  { // create an integrated for loop for each king move, and then call "is in check" for each one
-        ChessPosition kingPosition = kingPosition(teamColor);
+    public boolean isInCheckmate(TeamColor teamTurn) {
+        ChessPosition kingPosition = kingPosition(teamTurn);
+        System.out.println(teamTurn + " king found at: " + kingPosition.getRow() + ", " + kingPosition.getColumn());
+        tempBoard = new ChessBoard(gameBoard);
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition foePosition = new ChessPosition(i, j);
+                if (tempBoard.getPiece(foePosition) != null && tempBoard.getPiece(foePosition).getTeamColor() != teamTurn) {
+                    for (ChessMove checkMove : tempBoard.getPiece(foePosition).pieceMoves(tempBoard, foePosition)) {
+                        if (checkMove.getEndPosition().equals(kingPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    /*public boolean isInCheckmate(TeamColor teamTurn)  { // create an integrated for loop for each king move, and then call "is in check" for each one
+        ChessPosition kingPosition = kingPosition(teamTurn);
+        //assert kingPosition != null;
         ChessPiece kingPiece = gameBoard.getPiece(kingPosition);
         ChessBoard checkBoard = new ChessBoard(gameBoard);
         checkBoardCheck = true;
@@ -139,24 +160,25 @@ public class ChessGame {
             ChessPosition newPosition = new ChessPosition(tempRow, tempCol);
             ChessMove tempKingMove = new ChessMove(kingPosition, newPosition, null);
             checkBoard.movePiece(tempKingMove, kingPiece);
-            if (isInCheck(teamColor)) {
+            if (isInCheck(teamTurn)) {
                 return true;
             }
         }
         checkBoardCheck = false;
         return false;
-    }
+    }*/
 
 
-    private ChessPosition kingPosition(TeamColor teamColor) {
+    private ChessPosition kingPosition(TeamColor teamTurn) {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                if ((tempBoard.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) && (tempBoard.getPiece(position).getTeamColor() == teamColor)) {
+                ChessPosition position = new ChessPosition(i, j); // switching below row from tempboard to gameboard
+                if (((gameBoard.getPiece(position) != null) && gameBoard.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) && (gameBoard.getPiece(position).getTeamColor() == teamTurn)) {
                     return position;
                 }
             }
         }
+        System.out.println("King not found");
         return null;
     }
 
@@ -164,20 +186,20 @@ public class ChessGame {
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
      *
-     * @param teamColor which team to check for stalemate
+     * @param teamTurn which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
+    public boolean isInStalemate(TeamColor teamTurn) {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece checkPiece = gameBoard.getPiece(position);
-                if ((checkPiece != null) && (checkPiece.getTeamColor() == teamColor)) {
+                if ((checkPiece != null) && (checkPiece.getTeamColor() == teamTurn)) {
                     for (ChessMove pieceToCheck : validMoves(position)) {
                         checkBoard = new ChessBoard(gameBoard);
                         checkBoardCheck = true;
                         checkBoard.movePiece(pieceToCheck, checkPiece);
-                        if (isInCheck(teamColor)) {
+                        if (isInCheck(teamTurn)) {
                             return true;
                         }
                     }
@@ -210,18 +232,18 @@ public class ChessGame {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessGame chessGame = (ChessGame) o;
-        return checkBoardCheck == chessGame.checkBoardCheck && teamColor == chessGame.teamColor && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(tempBoard, chessGame.tempBoard) && Objects.equals(checkBoard, chessGame.checkBoard);
+        return checkBoardCheck == chessGame.checkBoardCheck && teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(tempBoard, chessGame.tempBoard) && Objects.equals(checkBoard, chessGame.checkBoard);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamColor, gameBoard, tempBoard, checkBoard, checkBoardCheck);
+        return Objects.hash(teamTurn, gameBoard, tempBoard, checkBoard, checkBoardCheck);
     }
 
     @Override
     public String toString() {
         return "ChessGame{" +
-                "teamColor=" + teamColor +
+                "teamTurn=" + teamTurn +
                 ", gameBoard=" + gameBoard +
                 ", tempBoard=" + tempBoard +
                 ", checkBoard=" + checkBoard +
