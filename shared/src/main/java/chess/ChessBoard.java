@@ -16,14 +16,6 @@ public class ChessBoard {
         board = new ChessPiece[9][9];
     }
 
-//    public ChessBoard(ChessBoard originalBoard) {
-//        try { // if clone doesn't work, just loop through board and .copy each space
-//            ChessBoard copiedBoard = (ChessBoard) originalBoard.clone();
-//        } catch (CloneNotSupportedException e)  {
-//            System.out.println("Clone support exception");
-//        }
-//    }
-
     public ChessBoard(ChessBoard originalBoard) {
         this.board = originalBoard.copy();
     }
@@ -74,9 +66,6 @@ public class ChessBoard {
         var endPosition = move.getEndPosition();
         board[endPosition.getRow()][endPosition.getColumn()] = chessPiece;
         board[startPosition.getRow()][startPosition.getColumn()] = null;
-        // debugging
-//        System.out.println("Current Board:");
-//        printBoard();
     }
 
     public String getPieceAbbr(int i, int j) {
@@ -121,7 +110,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
-        board = new ChessPiece[9][9]; //Index 8 out of bounds for length 8 fixed when using 9
+        board = new ChessPiece[9][9];
 
         // Pawn
         for (int i = 1; i < 9; i++) {
