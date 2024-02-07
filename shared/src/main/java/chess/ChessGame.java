@@ -72,7 +72,7 @@ public class ChessGame {
     }
 
     public void validMovesPrint(Collection<ChessMove> validMoves) {
-        System.out.println("Available Moves:");
+        //System.out.println("Available Moves:");
         for (ChessMove move : validMoves) {
             ChessPosition startPosition = move.getStartPosition();
             ChessPosition endPosition = move.getEndPosition();
@@ -82,7 +82,7 @@ public class ChessGame {
             int endCol = endPosition.getColumn();
             String piece = String.valueOf(gameBoard.getPiece(startPosition).getPieceType());
             String color = String.valueOf(gameBoard.getPiece(startPosition).getTeamColor());
-            System.out.println(color + " " + piece + " moving from " + startRow + "," + startCol + " to " + endRow + "," + endCol);
+            //System.out.println(color + " " + piece + " moving from " + startRow + "," + startCol + " to " + endRow + "," + endCol);
         }
     }
 
@@ -104,8 +104,8 @@ public class ChessGame {
         TeamColor pieceColor = playerPiece.getTeamColor();
         teamTurn = getTeamTurn();
         Collection<ChessMove> validMoves = validMoves(startPosition);
-        System.out.println("Requested Move:");
-        System.out.println(pieceColor + " " + piece + " moving from " + startRow + "," + startCol + " to " + endRow + "," + endCol);
+        //System.out.println("Requested Move:");
+        //System.out.println(pieceColor + " " + piece + " moving from " + startRow + "," + startCol + " to " + endRow + "," + endCol);
         validMovesPrint(validMoves);
         if (gameBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Selected space is empty on chessboard");
@@ -136,8 +136,8 @@ public class ChessGame {
         TeamColor yourTeam = dummyBoard.getPiece(move.getStartPosition()).getTeamColor();
         ChessPiece playerPiece = dummyBoard.getPiece(move.getStartPosition());
         dummyBoard.movePiece(move, playerPiece);
-        System.out.println("Current Dummy Board: ");
-        dummyBoard.printBoard();
+        //System.out.println("Current Dummy Board: ");
+        //dummyBoard.printBoard();
         return !checkFoe(yourTeam, dummyBoard);
     }
 
@@ -169,7 +169,7 @@ public class ChessGame {
     }
 
     private boolean checkFoe(TeamColor teamTurn, ChessBoard testingBoard) {
-        testingBoard.printBoard();
+        //testingBoard.printBoard();
         ChessPosition kingPosition = kingPosition(teamTurn, testingBoard);
         if (kingPosition == null) {
             return false;
@@ -180,14 +180,14 @@ public class ChessGame {
                 if (testingBoard.getPiece(foePosition) != null && testingBoard.getPiece(foePosition).getTeamColor() != teamTurn) {
                     for (ChessMove checkMove : testingBoard.getPiece(foePosition).pieceMoves(testingBoard, foePosition)) {
                         if (checkMove.getEndPosition().equals(kingPosition)) {
-                            System.out.println(teamTurn + " king in Check");
+                            //System.out.println(teamTurn + " king in Check");
                             return true;
                         }
                     }
                 }
             }
         }
-        System.out.println(teamTurn + " king not in check");
+        //System.out.println(teamTurn + " king not in check");
         return false;
     }
 
