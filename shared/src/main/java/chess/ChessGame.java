@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 import static chess.ChessPiece.*;
@@ -55,12 +56,19 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> movesValid = new HashSet<>();
         ChessPiece playerPiece = gameBoard.getPiece(startPosition);
         if (playerPiece != null) {
-            return playerPiece.pieceMoves(this.getBoard(), startPosition);
-        } else {
-            return null;
+            TeamColor teamColor = playerPiece.getTeamColor();
+            for (ChessMove move : playerPiece.pieceMoves(gameBoard, startPosition)) {
+                ChessBoard dummyBoard = new ChessBoard(gameBoard);
+                dummyBoard.movePiece(move, playerPiece);
+                if (!checkFoe(teamColor, dummyBoard)) {
+                    movesValid.add(move);
+                }
+            }
         }
+        return movesValid;
     }
 
     public void validMovesPrint(Collection<ChessMove> validMoves) {
@@ -144,8 +152,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamTurn) {
-        System.out.println("IsInCheck Board");
-        gameBoard.printBoard();
+//        System.out.println("IsInCheck Board");
+//        gameBoard.printBoard();
         return checkFoe(teamTurn, gameBoard);
     }
 
@@ -161,7 +169,6 @@ public class ChessGame {
     }
 
     private boolean checkFoe(TeamColor teamTurn, ChessBoard testingBoard) {
-
         testingBoard.printBoard();
         ChessPosition kingPosition = kingPosition(teamTurn, testingBoard);
         if (kingPosition == null) {
@@ -213,14 +220,14 @@ public class ChessGame {
                     for (ChessMove pieceToCheck : validMoves(position)) {
                         ChessBoard dummyBoard = new ChessBoard(gameBoard);
                         dummyBoard.movePiece(pieceToCheck, checkPiece);
-                        if (checkFoe(teamTurn, dummyBoard)) {
-                            return true;
+                        if (!checkFoe(teamTurn, dummyBoard)) {
+                            return false;
                         }
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
