@@ -20,7 +20,7 @@ public class AIOServiceTest {
     @DisplayName("Clear Application Test 1")
     public void clearTest1() {
         ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
     @Test
@@ -28,7 +28,7 @@ public class AIOServiceTest {
     @DisplayName("Register User Test - Positive")
     public void registerGood() {
         RegisterService.RegisterResult result = RegisterService.register(new RegisterService.RegisterRequest("garrett13", "password", "email"));
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class AIOServiceTest {
     public void logInGood() {
         RegisterService.register(new RegisterService.RegisterRequest("garrett11", "password", "email"));
         LoginService.LoginResult result = LoginService.login(new LoginService.LoginRequest("garrett11", "password"));
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class AIOServiceTest {
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("logouttest", "password"));
         String authToken = login.authToken();
         LogoutService.LogoutResult result = LogoutService.logout(authToken);
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class AIOServiceTest {
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("listgamestestgood", "password"));
         String authToken = login.authToken();
         ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
 
@@ -134,7 +134,7 @@ public class AIOServiceTest {
         CreateGameService.CreateGameResult create = CreateGameService.createGame(new CreateGameService.CreateGameRequest("game2"), authToken);
         Integer gameID = create.gameID();
         JoinGameService.JoinGameResult result = JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
 
@@ -158,7 +158,7 @@ public class AIOServiceTest {
     @DisplayName("Clear Application Test 2")
     public void clearTest2() {
         ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
-        Assertions.assertNull(result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
 }
