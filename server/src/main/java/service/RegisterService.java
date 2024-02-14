@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class RegisterService {
 
-    record RegisterRequest(String username, String password, String email) {}
-    record RegisterResult(String username, String authToken, String message) {}
+    public record RegisterRequest(String username, String password, String email) {}
+    public record RegisterResult(String username, String authToken, String message) {}
     static userDAO userDAO = new userDAO();
     static authTokenDAO authDAO = new authTokenDAO();
 

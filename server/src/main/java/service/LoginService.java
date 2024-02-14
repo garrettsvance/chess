@@ -9,7 +9,7 @@ import java.util.UUID;
 public class LoginService {
 
     public record LoginRequest(String username, String password) {}
-    record LoginResult(String username, String authToken, String message) {}
+    public record LoginResult(String username, String authToken, String message) {}
     static userDAO userMap = new userDAO();
     static authTokenDAO authDAO = new authTokenDAO();
 

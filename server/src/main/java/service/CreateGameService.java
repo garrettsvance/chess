@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class CreateGameService {
 
-    record CreateGameRequest(String gameName) {}
-    record CreateGameResult(Integer gameID, String message) {}
+    public record CreateGameRequest(String gameName) {}
+    public record CreateGameResult(Integer gameID, String message) {}
     static authTokenDAO authDAO = new authTokenDAO();
     static gameDAO gameMap = new gameDAO();
 

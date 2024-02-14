@@ -9,8 +9,8 @@ import dataAccess.gameDAO;
 
 public class JoinGameService {
 
-    record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
-    record JoinGameResult(String playerColor, Integer gameID, String message) {}
+    public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
+    public record JoinGameResult(String playerColor, Integer gameID, String message) {}
 
     static gameDAO gameMap = new gameDAO();
     static authTokenDAO authDAO = new authTokenDAO();

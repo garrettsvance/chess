@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class ListGameService {
 
-    record ListGamesResult(Collection<GameData> games, String message) {}
+    public record ListGamesResult(Collection<GameData> games, String message) {}
     static authTokenDAO authDAO = new authTokenDAO();
     static gameDAO games = new gameDAO();
 

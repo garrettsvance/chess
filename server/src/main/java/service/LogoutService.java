@@ -3,7 +3,7 @@ import dataAccess.authTokenDAO;
 
 public class LogoutService {
 
-    record LogoutResult(String message) {}
+    public record LogoutResult(String message) {}
     static authTokenDAO authDAO = new authTokenDAO();
 
     public static LogoutResult logout(String authToken) {
