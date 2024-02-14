@@ -1,5 +1,11 @@
 package serviceTests;
-import service.*;
+import service.ClearApplicationService;
+import service.CreateGameService;
+import service.JoinGameService;
+import service.ListGameService;
+import service.LoginService;
+import service.LogoutService;
+import service.RegisterService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -13,7 +19,7 @@ public class AIOserviceTest {
     @Order(1)
     @DisplayName("Clear Application Test 1")
     public void clearTest1() {
-        ClearApplicationService.ClearApplicationResult result = service.ClearApplicationService.clear();
+        ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
         Assertions.assertNull(result.message());
     }
 
@@ -21,35 +27,35 @@ public class AIOserviceTest {
     @Order(2)
     @DisplayName("Register User Test - Positive")
     public void registerGood() {
-        Result.RegisterResult result = service.RegisterService.register(new RegisterRequest("garrett13", "password", "email"));
-        Assertions.assertNull(result.getMessage());
+        RegisterService.RegisterResult result = RegisterService.register(new RegisterService.RegisterRequest("garrett13", "password", "email"));
+        Assertions.assertNull(result.message());
     }
 
     @Test
     @Order(3)
     @DisplayName("Register User Test - Negative")
     public void registerBad() {
-        service.Registerservice.register(new RegisterRequest("garrett", "password", "email"));
-        Result.RegisterResult result = service.Registerservice.register(new RegisterRequest("garrett", "password", "email"));
-        service.Registerservice.register(new RegisterRequest("garrett", "password", "email"));
-        Assertions.assertEquals("Error: already taken", result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
+        RegisterService.RegisterResult result = RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
+        RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
+        Assertions.assertEquals("Error: already taken", result.message());
     }
 
     @Test
     @Order(4)
     @DisplayName("Log In User Test - Positive")
     public void logInGood() {
-        service.Registerservice.register(new RegisterRequest("garrett11", "password", "email"));
-        Result.LoginResult result = service.Loginservice.login(new LoginRequest("garrett11", "password"));
-        Assertions.assertNull(result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("garrett11", "password", "email"));
+        LoginService.LoginResult result = LoginService.login(new LoginService.LoginRequest("garrett11", "password"));
+        Assertions.assertNull(result.message());
     }
 
     @Test
     @Order(5)
     @DisplayName("Log In User Test - Negative")
     public void logInBad() {
-        Result.LoginResult result = service.Loginservice.login(new LoginRequest("garrett", "wrongpassword"));
-        Assertions.assertEquals("Error: unauthorized", result.getMessage());
+        LoginService.LoginResult result = LoginService.login(new LoginService.LoginRequest("garrett", "wrongpassword"));
+        Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
     @Test
