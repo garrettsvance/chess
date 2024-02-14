@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-public class AIOserviceTest {
+public class AIOServiceTest {
 
     @Test
     @Order(1)
@@ -62,11 +62,11 @@ public class AIOserviceTest {
     @Order(6)
     @DisplayName("Log out User Test - Positive")
     public void logOutGood() {
-        service.Registerservice.register(new RegisterRequest("logouttest", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("logouttest", "password"));
-        String authToken = login.getAuthToken();
-        Result.LogoutResult result = service.Logoutservice.logout(authToken);
-        Assertions.assertNull(result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("logouttest", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("logouttest", "password"));
+        String authToken = login.authToken();
+        LogoutService.LogoutResult result = LogoutService.logout(authToken);
+        Assertions.assertNull(result.message());
     }
 
     @Test
@@ -74,19 +74,19 @@ public class AIOserviceTest {
     @DisplayName("Log Out User Test - Negative")
     public void logOutBad() {
         String authToken = UUID.randomUUID().toString();
-        Result.LogoutResult result = service.Logoutservice.logout(authToken);
-        Assertions.assertEquals("Error: unauthorized", result.getMessage());
+        LogoutService.LogoutResult result = LogoutService.logout(authToken);
+        Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
     @Test
     @Order(8)
     @DisplayName("Create Game service Test - Positive")
     public void createGood() {
-        service.Registerservice.register(new RegisterRequest("creategametestgood", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("creategametestgood", "password"));
-        String authToken = login.getAuthToken();
-        Result.CreateGameResult result = service.CreateGameservice.createGame(new CreateGameRequest("game1"), authToken);
-        Assertions.assertEquals("gameID", result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("creategametestgood", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestgood", "password"));
+        String authToken = login.authToken();
+        CreateGameService.CreateGameResult result = CreateGameService.createGame(new CreateGameService.CreateGameRequest("game1"), authToken);
+        Assertions.assertEquals("gameID", result.message());
     }
 
 
@@ -94,11 +94,11 @@ public class AIOserviceTest {
     @Order(9)
     @DisplayName("Create Game Test - Negative")
     public void createBad() {
-        service.Registerservice.register(new RegisterRequest("creategametestbad", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("creategametestbad", "password"));
-        String authToken = login.getAuthToken();
-        Result.CreateGameResult result = service.CreateGameservice.createGame(new CreateGameRequest(null), authToken);
-        Assertions.assertEquals("Error: bad request", result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("creategametestbad", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestbad", "password"));
+        String authToken = login.authToken();
+        CreateGameService.CreateGameResult result = CreateGameService.createGame(new CreateGameService.CreateGameRequest(null), authToken);
+        Assertions.assertEquals("Error: bad request", result.message());
     }
 
 
@@ -106,11 +106,11 @@ public class AIOserviceTest {
     @Order(10)
     @DisplayName("List All Games Test - Positive")
     public void listAllGood() {
-        service.Registerservice.register(new RegisterRequest("listgamestestgood", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("listgamestestgood", "password"));
-        String authToken = login.getAuthToken();
-        Result.ListGamesResult result = service.ListGameservice.listGames(authToken);
-        Assertions.assertNull(result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("listgamestestgood", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("listgamestestgood", "password"));
+        String authToken = login.authToken();
+        ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
+        Assertions.assertNull(result.message());
     }
 
 
@@ -119,8 +119,8 @@ public class AIOserviceTest {
     @DisplayName("List All Games Test - Negative")
     public void listAllBad() {
         String authToken = UUID.randomUUID().toString();
-        Result.ListGamesResult result = service.ListGameservice.listGames(authToken);
-        Assertions.assertEquals("Error: unauthorized", result.getMessage());
+        ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
+        Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
 
@@ -128,13 +128,13 @@ public class AIOserviceTest {
     @Order(12)
     @DisplayName("Join Game Test - Positive")
     public void joinGameGood() {
-        service.Registerservice.register(new RegisterRequest("joingametestgood", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("joingametestgood", "password"));
-        String authToken = login.getAuthToken();
-        Result.CreateGameResult create = service.CreateGameservice.createGame(new CreateGameRequest("game2"), authToken);
-        Integer gameID = create.getGameID();
-        Result.JoinGameResult result = service.JoinGameservice.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
-        Assertions.assertNull(result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("joingametestgood", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestgood", "password"));
+        String authToken = login.authToken();
+        CreateGameService.CreateGameResult create = CreateGameService.createGame(new CreateGameService.CreateGameRequest("game2"), authToken);
+        Integer gameID = create.gameID();
+        JoinGameService.JoinGameResult result = JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        Assertions.assertNull(result.message());
     }
 
 
@@ -142,14 +142,14 @@ public class AIOserviceTest {
     @Order(13)
     @DisplayName("Join Game Test - Negative")
     public void joinGameBad() {
-        service.Registerservice.register(new RegisterRequest("joingametestbad", "password", "email"));
-        Result.LoginResult login = service.Loginservice.login(new LoginRequest("joingametestbad", "password"));
-        String authToken = login.getAuthToken();
-        Result.CreateGameResult create = service.CreateGameservice.createGame(new CreateGameRequest("game3"), authToken);
-        Integer gameID = create.getGameID();
-        service.JoinGameservice.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
-        Result.JoinGameResult result = service.JoinGameservice.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
-        Assertions.assertEquals("Error: already taken", result.getMessage());
+        RegisterService.register(new RegisterService.RegisterRequest("joingametestbad", "password", "email"));
+        LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestbad", "password"));
+        String authToken = login.authToken();
+        CreateGameService.CreateGameResult create = CreateGameService.createGame(new CreateGameService.CreateGameRequest("game3"), authToken);
+        Integer gameID = create.gameID();
+        JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        JoinGameService.JoinGameResult result = JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        Assertions.assertEquals("Error: already taken", result.message());
     }
 
 
@@ -157,8 +157,8 @@ public class AIOserviceTest {
     @Order(14)
     @DisplayName("Clear Application Test 2")
     public void clearTest2() {
-        ClearApplicationResult result = service.ClearApplicationservice.clear();
-        Assertions.assertNull(result.getMessage());
+        ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
+        Assertions.assertNull(result.message());
     }
 
 }
