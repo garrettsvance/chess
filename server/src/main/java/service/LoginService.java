@@ -8,14 +8,14 @@ import java.util.UUID;
 
 public class LoginService {
 
-    record LoginRequest(String username, String password) {}
+    public record LoginRequest(String username, String password) {}
     record LoginResult(String username, String authToken, String message) {}
     static userDAO userMap = new userDAO();
     static authTokenDAO authDAO = new authTokenDAO();
 
     public static LoginResult login(LoginRequest request) {
-        String userName = request.username;
-        String passWord = request.password;
+        String userName = request.username();
+        String passWord = request.password();
 
         if (userMap.findUser(userName) == null || !passWord.equals(userMap.findUser(userName).getPassword())) {
             return new LoginResult(null, null, "Error: unauthorized");

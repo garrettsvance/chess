@@ -13,16 +13,16 @@ public class RegisterService {
     static authTokenDAO authDAO = new authTokenDAO();
 
     public static RegisterResult register(RegisterRequest request) {
-        if (request.email == null || request.username == null || request.password == null) {
+        if (request.email() == null || request.username() == null || request.password() == null) {
             return new RegisterResult(null, null, "Error: bad request");
         }
-        if (userDAO.findUser(request.username) != null) {
+        if (userDAO.findUser(request.username()) != null) {
             return new RegisterResult(null, null, "Error: already taken");
         } else {
-            userDAO.insertUser(new UserData(request.username, request.password, request.email));
+            userDAO.insertUser(new UserData(request.username(), request.password(), request.email()));
             String userToken = UUID.randomUUID().toString();
-            authDAO.addToken(new AuthData(userToken, request.username));
-            return new RegisterResult(request.username, userToken, "success");
+            authDAO.addToken(new AuthData(userToken, request.username()));
+            return new RegisterResult(request.username(), userToken, "success");
         }
     }
 

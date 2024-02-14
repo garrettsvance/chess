@@ -13,7 +13,7 @@ public class CreateGameService {
     static gameDAO gameMap = new gameDAO();
 
     public static CreateGameResult createGame(CreateGameRequest request, String authToken) {
-        String gameName = request.gameName;
+        String gameName = request.gameName();
         int gameID = Math.abs(UUID.randomUUID().hashCode());
         if (authDAO.findToken(authToken) == null) {
             return new CreateGameResult( null, "Error: unauthorized");

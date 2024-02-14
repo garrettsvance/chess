@@ -17,14 +17,14 @@ public class JoinGameService {
 
     public static JoinGameResult joinGame(JoinGameRequest request, String authToken) {
         AuthData userToken = authDAO.findToken(authToken);
-        int gameID = request.gameID;
+        int gameID = request.gameID();
         GameData game = gameMap.findGame(gameID);
 
         if (authDAO.findToken(authToken) == null) {
             return new JoinGameResult(null, null, "Error: unauthorized");
         }
         String userName = userToken.getUserName();
-        String playerColor = request.playerColor;
+        String playerColor = request.playerColor();
         if (game == null) {
             return new JoinGameResult(null, null, "Error: bad request");
         } else if (playerColor == null) {
