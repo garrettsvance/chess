@@ -86,7 +86,7 @@ public class AIOServiceTest {
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestgood", "password"));
         String authToken = login.authToken();
         CreateGameService.CreateGameResult result = CreateGameService.createGame(new CreateGameService.CreateGameRequest("game1"), authToken);
-        Assertions.assertEquals("gameID", result.message());
+        Assertions.assertEquals("success", result.message());
     }
 
 
