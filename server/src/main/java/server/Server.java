@@ -1,13 +1,21 @@
 package server;
 
+import org.eclipse.jetty.websocket.server.WebSocketServerConnection;
 import spark.*;
+
+import java.nio.file.Paths;
 
 public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
+        //Spark.webSocket("/connect", WebSocketServerConnection.class);
+
         Spark.staticFiles.location("web");
+
+        //var webDir = Paths.get(Server.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "web");
+        //Spark.externalStaticFileLocation(webDir.toString());
 
         Spark.post("/session", new server.Handler.LoginHandler());
         Spark.delete("/db", new server.Handler.ClearApplicationHandler());
