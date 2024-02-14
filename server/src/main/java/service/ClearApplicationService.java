@@ -3,6 +3,8 @@ import dataAccess.*;
 
 public class ClearApplicationService {
 
+    record ClearApplicationResult(String message) {}
+
     public static ClearApplicationResult clear() {
         try {
             new authTokenDAO().clearTokens();
