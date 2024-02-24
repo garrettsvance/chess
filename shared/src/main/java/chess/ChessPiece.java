@@ -161,23 +161,28 @@ public class ChessPiece {
         for (int[] move : rookMoves) {
             boolean end = false;
             for (int i = 1; i < 9 && !end; i++) {
-                int newRow = startRow + i * move[0];
-                int newCol = startCol + i * move[1];
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                if (isValidMove(newMove)) {
-                    if (isOccupied(board, newMove).equals("empty")) {
-                        moves.add(newMove);
-                    } else if (isOccupied(board, newMove).equals("enemy")) {
-                        moves.add(newMove);
-                        end = true;
-                    } else {
-                        end = true;
-                    }
-                }
+                end = newPositionCalc(board, myPosition, moves, startRow, startCol, move, false, i);
             }
         }
         return moves;
+    }
+
+    private boolean newPositionCalc(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int startRow, int startCol, int[] move, boolean end, int i) {
+        int newRow = startRow + i * move[0];
+        int newCol = startCol + i * move[1];
+        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+        if (isValidMove(newMove)) {
+            if (isOccupied(board, newMove).equals("empty")) {
+                moves.add(newMove);
+            } else if (isOccupied(board, newMove).equals("enemy")) {
+                moves.add(newMove);
+                end = true;
+            } else {
+                end = true;
+            }
+        }
+        return end;
     }
 
 
@@ -192,20 +197,7 @@ public class ChessPiece {
                 {-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}
         };
 
-        for (int[] move : knightMoves) {
-            int newRow = startRow + move[0];
-            int newCol = startCol + move[1];
-            ChessPosition newPosition = new ChessPosition(newRow, newCol);
-            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            if (isValidMove(newMove)) {
-                if (isOccupied(board, newMove).equals("empty")) {
-                    moves.add(newMove);
-                } else if (isOccupied(board, newMove).equals("enemy")) {
-                    moves.add(newMove);
-                }
-            }
-        }
-        return moves;
+        return getChessMoves(board, myPosition, moves, startRow, startCol, knightMoves);
     }
 
 
@@ -223,20 +215,7 @@ public class ChessPiece {
         for (int[] move: bishopMoves) {
             boolean end = false;
             for (int i = 1; i < 8 && !end; i++) {
-                int newRow = startRow + i * move[0];
-                int newCol = startCol + i * move[1];
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                if (isValidMove(newMove)) {
-                    if (isOccupied(board, newMove).equals("empty")) {
-                        moves.add(newMove);
-                    } else if (isOccupied(board, newMove).equals("enemy")) {
-                        moves.add(newMove);
-                        end = true;
-                    } else {
-                        end = true;
-                    }
-                }
+                end = newPositionCalc(board, myPosition, moves, startRow, startCol, move, false, i);
             }
         }
         return moves;
@@ -253,7 +232,10 @@ public class ChessPiece {
         int[][] kingMoves = {
                 {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}
         };
+        return getChessMoves(board, myPosition, moves, startRow, startCol, kingMoves);
+    }
 
+    private Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int startRow, int startCol, int[][] kingMoves) {
         for (int[] move: kingMoves) {
             int newRow = startRow + move[0];
             int newCol = startCol + move[1];
