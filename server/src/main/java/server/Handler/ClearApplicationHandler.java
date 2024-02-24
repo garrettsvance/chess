@@ -10,7 +10,7 @@ public class ClearApplicationHandler implements Route {
 
 
     @Override
-    public Object handle(Request sparkRequest, Response response) throws Exception { //TODO: should these all be dataAccessException?
+    public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
             ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();

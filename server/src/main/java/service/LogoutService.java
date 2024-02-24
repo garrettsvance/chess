@@ -1,10 +1,10 @@
 package service;
-import dataAccess.authTokenDAO;
+import dataAccess.AuthTokenDAO;
 
 public class LogoutService {
 
     public record LogoutResult(String message) {}
-    static authTokenDAO authDAO = new authTokenDAO();
+    static AuthTokenDAO authDAO = new AuthTokenDAO();
 
     public static LogoutResult logout(String authToken) {
 

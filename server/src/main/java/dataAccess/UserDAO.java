@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class userDAO {
+public class UserDAO {
 
     static Map<String, UserData> userMap = new HashMap<>();
 

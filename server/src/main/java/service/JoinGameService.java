@@ -1,8 +1,8 @@
 package service;
 import model.AuthData;
 import model.GameData;
-import dataAccess.authTokenDAO;
-import dataAccess.gameDAO;
+import dataAccess.AuthTokenDAO;
+import dataAccess.GameDAO;
 
 
 
@@ -12,8 +12,8 @@ public class JoinGameService {
     public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
     public record JoinGameResult(String playerColor, Integer gameID, String message) {}
 
-    static gameDAO gameMap = new gameDAO();
-    static authTokenDAO authDAO = new authTokenDAO();
+    static GameDAO gameMap = new GameDAO();
+    static AuthTokenDAO authDAO = new AuthTokenDAO();
 
     public static JoinGameResult joinGame(JoinGameRequest request, String authToken) {
         AuthData userToken = authDAO.findToken(authToken);

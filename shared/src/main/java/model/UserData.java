@@ -20,8 +20,4 @@ public class UserData {
         return password;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
 }

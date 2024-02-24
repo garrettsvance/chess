@@ -1,7 +1,7 @@
 package service;
 import model.GameData;
-import dataAccess.authTokenDAO;
-import dataAccess.gameDAO;
+import dataAccess.AuthTokenDAO;
+import dataAccess.GameDAO;
 
 import java.util.UUID;
 
@@ -9,8 +9,8 @@ public class CreateGameService {
 
     public record CreateGameRequest(String gameName) {}
     public record CreateGameResult(Integer gameID, String message) {}
-    static authTokenDAO authDAO = new authTokenDAO();
-    static gameDAO gameMap = new gameDAO();
+    static AuthTokenDAO authDAO = new AuthTokenDAO();
+    static GameDAO gameMap = new GameDAO();
 
     public static CreateGameResult createGame(CreateGameRequest request, String authToken) {
         String gameName = request.gameName();
