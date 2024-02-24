@@ -93,16 +93,16 @@ public class ChessBoard {
         return null;
     }
 
-    public void printBoard() {
-        for (int i = 8; i >= 1; i--) {
-            for (int j = 1; j <= 8; j++) {
-               String pieceAbbr = getPieceAbbr(i, j);
-               System.out.print("|" + (board[i][j] != null ? pieceAbbr : " "));
-            }
-            System.out.println("|");
-        }
-        System.out.println("End Board");
-    }
+//    public void printBoard() {
+//        for (int i = 8; i >= 1; i--) {
+//            for (int j = 1; j <= 8; j++) {
+//               String pieceAbbr = getPieceAbbr(i, j);
+//               System.out.print("|" + (board[i][j] != null ? pieceAbbr : " "));
+//            }
+//            System.out.println("|");
+//        }
+//        System.out.println("End Board");
+//    }
 
     /**
      * Sets the board to the default starting board

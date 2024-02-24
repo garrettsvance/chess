@@ -7,17 +7,12 @@ public class GameData {
     String whiteUsername;
     String blackUsername;
     String gameName;
-    private transient ChessGame game;
 
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName) {
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
-    }
-
-    public ChessGame getGame() {
-        return game;
     }
 
     public int getGameID() {
