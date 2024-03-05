@@ -18,6 +18,14 @@ public class SQLUserDAO extends UserDAO {
 
     public void clearTokens() throws DataAccessException {}
 
+    private final String[] buildStatement = { //TODO: figure out what primary key is, figure out proper statement
+            """
+            CREATE TABLE IF NOT EXISTS (
+            PRIMARY KEY ('')
+            );
+            """
+    };
+
     private void configureDataBase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
