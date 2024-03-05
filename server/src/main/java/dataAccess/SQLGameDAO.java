@@ -30,8 +30,8 @@ public class SQLGameDAO extends GameDAO {
             CREATE TABLE IF NOT EXISTS game (
             'game' JSON NOT NULL,
             'gameID' INT NOT NULL,
-            'userName' VARCHAR(255) NOT NULL,
-            'color' VARCHAR(255) NOT NULL,
+            'userName' VARCHAR(100) NOT NULL,
+            'color' VARCHAR(100) NOT NULL,
             PRIMARY KEY ('game')
             );
             """
