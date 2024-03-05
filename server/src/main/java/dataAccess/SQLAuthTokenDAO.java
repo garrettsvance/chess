@@ -22,7 +22,7 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
 
     private final String[] buildStatement = {
             """
-            CREATE TABLE IF NOT EXISTS game (
+            CREATE TABLE IF NOT EXISTS auth (
             'authToken' VARCHAR(225) NOT NULL,
             PRIMARY KEY ('authToken')
             );
