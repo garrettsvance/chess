@@ -11,11 +11,14 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
     }
 
     public void addToken(AuthData authToken) throws DataAccessException {
-        //TODO: does this need to be formatted into a string?
-        var insertString = "INSERT INTO auth " + authToken;
+        String authtoken = authToken.getAuthToken();
+        String username = authToken.getUserName();
+        var insertString = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, authtoken);
+                preparedStatement.setString(2, username);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -25,13 +28,14 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
     }
 
     public AuthData findToken(String authToken) throws DataAccessException {
-        var insertString = "SELECT authToken FROM auth WHERE authToken = " + authToken;
+        var insertString = "SELECT authToken FROM auth WHERE authToken=?";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                return new AuthData(rs.getString("authToken"), rs.getString("userName"));
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, authToken);
+                try (var rs = preparedStatement.executeQuery()) {
+                    return new AuthData(rs.getString("authToken"), rs.getString("username"));
+                }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
@@ -39,11 +43,12 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
     }
 
     public void removeToken(String authToken) throws DataAccessException {
-        var insertString = "DELETE authToken FROM auth WHERE authToken = " + authToken;
+        var insertString = "DELETE authToken FROM auth WHERE authToken=?";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
-                preparedStatement.executeQuery();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, authToken);
+                preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
@@ -52,8 +57,8 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
 
     public void clearTokens() throws DataAccessException {
         var insertString = "DELETE FROM authToken";
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();
             }
         }  catch (SQLException ex) {
@@ -61,10 +66,11 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
         }
     }
 
-    private final String[] buildStatement = {
+    private final String[] buildString = {
             """
             CREATE TABLE IF NOT EXISTS auth (
-            'authToken' VARCHAR(100) NOT NULL,
+            authToken VARCHAR(255) NOT NULL,
+            username VARCHAR(255) NOT NULL,
             PRIMARY KEY ('authToken')
             );
             """
@@ -73,7 +79,7 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
     private void configureDataBase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : buildStatement) {
+            for (var statement : buildString) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
