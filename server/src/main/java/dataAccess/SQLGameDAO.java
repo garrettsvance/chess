@@ -2,12 +2,9 @@ package dataAccess;
 
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class SQLGameDAO extends GameDAO {
@@ -36,7 +33,7 @@ public class SQLGameDAO extends GameDAO {
 
     public GameData findGame(int gameID) throws DataAccessException {
         //TODO: again, check the "FROM"
-        var insertString = "SELECT gameID FROM game where gameID = \"" + gameID + "\"" ;
+        var insertString = "SELECT gameID FROM game WHERE gameID = \"" + gameID + "\"";
 
         try (var connection = DatabaseManager.getConnection()) {
             try (var preparedStatement = connection.prepareStatement(insertString)) {
@@ -69,9 +66,37 @@ public class SQLGameDAO extends GameDAO {
         }
     }
 
-    public void claimSpot(String userName, String color, Integer gameID) {}
+    public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
+        String playerColor = (color.equals("WHITE")) ? "whiteUsername" : (color.equals("BLACK") ? "blackUsername" : null);
+        //TODO: check syntax for insertPlayer
+        var insertPlayer = "UPDATE game SET " + userName + " SET " + playerColor + " WHERE gameID = \"" + gameID + "\"";
+        var insertString = "SELECT gameID FROM game where gameID = \"" + gameID + "\"";
 
-    public void clearTokens() {}
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                try (var rs = preparedStatement.executeQuery()) { //TODO: is this the proper order of things?
+                    rs.next();
+                    try (var statement = connection.prepareStatement(insertPlayer)) {
+                        statement.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to list games: %s", ex.getMessage()));
+        }
+
+    }
+
+    public void clearTokens() throws DataAccessException {
+        var insertString = "DELETE FROM game";
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeUpdate();
+            }
+        }  catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to clear data: %s", ex.getMessage()));
+        }
+    }
 
     private final String[] buildStatement = { //TODO: figure out what primary key is, figure out proper statement
             """
