@@ -10,15 +10,56 @@ public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implement
         configureDataBase();
     }
 
-    public void addToken(AuthData authToken) {}
+    public void addToken(AuthData authToken) throws DataAccessException {
+        //TODO: does this need to be formatted into a string?
+        var insertString = "INSERT INTO auth " + authToken;
 
-    public AuthData findToken(String authToken) {
-        return null;
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to add token: %s", ex.getMessage()));
+        }
+
     }
 
-    public void removeToken(String authToken) {}
+    public AuthData findToken(String authToken) throws DataAccessException {
+        var insertString = "SELECT authToken FROM auth WHERE authToken = " + authToken;
 
-    public void clearTokens() throws DataAccessException {}
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                var rs = preparedStatement.executeQuery();
+                rs.next();
+                return new AuthData(rs.getString("authToken"), rs.getString("userName"));
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
+        }
+    }
+
+    public void removeToken(String authToken) throws DataAccessException {
+        var insertString = "DELETE authToken FROM auth WHERE authToken = " + authToken;
+
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeQuery();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
+        }
+    }
+
+    public void clearTokens() throws DataAccessException {
+        var insertString = "DELETE FROM authToken";
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeUpdate();
+            }
+        }  catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to clear data: %s", ex.getMessage()));
+        }
+    }
 
     private final String[] buildStatement = {
             """

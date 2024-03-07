@@ -7,15 +7,15 @@ public class AuthTokenDAO {
 
     static Map<String, AuthData> authMap = new HashMap<>();
 
-    public void addToken(AuthData authToken) {
+    public void addToken(AuthData authToken) throws DataAccessException {
         authMap.put(authToken.getAuthToken(), authToken);
     }
 
-    public AuthData findToken(String authToken) {
+    public AuthData findToken(String authToken) throws DataAccessException {
         return authMap.get(authToken);
     }
 
-    public void removeToken(String authToken) {
+    public void removeToken(String authToken) throws DataAccessException {
         authMap.remove(authToken);
     }
 
