@@ -14,7 +14,7 @@ public class UserDAO {
         userMap.put(userInfo.getUserName(), userInfo);
     }
 
-    public UserData findUser(String userName) {
+    public UserData findUser(String userName) throws DataAccessException {
         return userMap.get(userName);
     }
 

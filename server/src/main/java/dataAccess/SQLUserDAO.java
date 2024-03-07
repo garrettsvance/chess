@@ -38,19 +38,32 @@ public class SQLUserDAO extends UserDAO {
         }
     }
 
-    public UserData findUser(String userName) {
+    public UserData findUser(String userName) throws DataAccessException {
         var insertString = "SELECT username FROM user where username = \"" + userName + "\"" ;
 
         try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatment = connection.prepareStatement(insertString)) {
-                var rs = preparedStatment.executeQuery();
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                var rs = preparedStatement.executeQuery();
                 rs.next();
-                return new
+                return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
             }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to find User: %s", ex.getMessage()));
         }
     }
 
-    public void clearTokens() throws DataAccessException {}
+
+
+    public void clearTokens() throws DataAccessException {
+        var insertString = "DELETE FROM user";
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeUpdate();
+            }
+        }  catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to clear data: %s", ex.getMessage()));
+        }
+    }
 
     private final String[] buildStatement = { //TODO: figure out what primary key is, figure out proper statement
             """
