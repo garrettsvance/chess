@@ -1,19 +1,53 @@
 package dataAccess;
 
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 public class SQLUserDAO extends UserDAO {
 
-    public SQLUserDAO() throws DataAccessException {
+    public SQLUserDAO() throws DataAccessException, SQLException {
         configureDataBase();
     }
 
-    public void insertUser(UserData userInfo) {}
+    private String encrypt(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(password);
+    }
+
+    private boolean checkPassword(String oldPassword, String newPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(newPassword, oldPassword);
+    }
+
+
+    public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
+        String userName = userInfo.getUserName();
+        String encryptedPassword = encrypt(userInfo.getPassword());
+        String email = userInfo.getEmail();
+        var insertString = "INSERT INTO user (username, password, email)" + "VALUES (\"" + userName + "\", \"" + encryptedPassword + "\", \"" + email + "\")";
+
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatement = connection.prepareStatement(insertString)) {
+                preparedStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException(String.format("Unable to insert User: %s", ex.getMessage()));
+            }
+        }
+    }
 
     public UserData findUser(String userName) {
-        return null;
+        var insertString = "SELECT username FROM user where username = \"" + userName + "\"" ;
+
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var preparedStatment = connection.prepareStatement(insertString)) {
+                var rs = preparedStatment.executeQuery();
+                rs.next();
+                return new
+            }
+        }
     }
 
     public void clearTokens() throws DataAccessException {}
@@ -26,7 +60,7 @@ public class SQLUserDAO extends UserDAO {
             """
     };
 
-    private void configureDataBase() throws DataAccessException {
+    private void configureDataBase() throws SQLException, DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : buildStatement) {
@@ -35,7 +69,7 @@ public class SQLUserDAO extends UserDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 

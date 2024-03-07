@@ -1,5 +1,7 @@
 package dataAccess;
 import model.UserData;
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,7 @@ public class UserDAO {
 
     static Map<String, UserData> userMap = new HashMap<>();
 
-    public void insertUser(UserData userInfo) {
+    public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         userMap.put(userInfo.getUserName(), userInfo);
     }
 
