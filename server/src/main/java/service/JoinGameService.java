@@ -1,4 +1,5 @@
 package service;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import dataAccess.AuthTokenDAO;
@@ -15,7 +16,7 @@ public class JoinGameService {
     static GameDAO gameMap = new GameDAO();
     static AuthTokenDAO authDAO = new AuthTokenDAO();
 
-    public static JoinGameResult joinGame(JoinGameRequest request, String authToken) {
+    public static JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
         AuthData userToken = authDAO.findToken(authToken);
         int gameID = request.gameID();
         GameData game = gameMap.findGame(gameID);

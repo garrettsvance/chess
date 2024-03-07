@@ -1,4 +1,5 @@
 package service;
+import dataAccess.DataAccessException;
 import model.GameData;
 import dataAccess.AuthTokenDAO;
 import dataAccess.GameDAO;
@@ -12,7 +13,7 @@ public class CreateGameService {
     static AuthTokenDAO authDAO = new AuthTokenDAO();
     static GameDAO gameMap = new GameDAO();
 
-    public static CreateGameResult createGame(CreateGameRequest request, String authToken) {
+    public static CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         String gameName = request.gameName();
         int gameID = Math.abs(UUID.randomUUID().hashCode());
         if (authDAO.findToken(authToken) == null) {

@@ -35,4 +35,6 @@ public class GameData {
         this.blackUsername = blackUsername;
     }
 
+    public String getGameName() {return gameName;}
+
 }

@@ -1,6 +1,7 @@
 package dataAccess;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,20 +10,20 @@ public class GameDAO {
 
     static Map<Integer, GameData> gameMap = new HashMap<>();
 
-    public void insertGame(GameData game) {
+    public void insertGame(GameData game) throws DataAccessException {
         gameMap.put(game.getGameID(), game);
     }
 
-    public GameData findGame(int gameID) {
+    public GameData findGame(int gameID) throws DataAccessException {
         return gameMap.get(gameID);
     }
 
-    public Collection<GameData> findAll() {
+    public Collection<GameData> findAll() throws DataAccessException, SQLException {
         return gameMap.values();
     }
 
 
-    public void claimSpot(String userName, String color, Integer gameID) {
+    public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
         if (color.equalsIgnoreCase("white")) {
             GameData game = findGame(gameID);
             game.setWhiteUsername(userName);
