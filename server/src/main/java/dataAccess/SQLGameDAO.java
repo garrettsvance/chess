@@ -3,6 +3,7 @@ package dataAccess;
 import com.google.gson.Gson;
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,11 +20,14 @@ public class SQLGameDAO extends GameDAO {
         String whiteUsername = game.getWhiteUsername();
         String gameName = game.getGameName();
 
-        //TODO: double check the insert methods, how that works, whether or not you're inserting "INTO" the correct place
-        var insertString = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName)" + "VALUES (\"" + gameID + "\", \"" + whiteUsername + "\", \"" + blackUsername + "\", \"" + gameName + "\")";
+        var insertString = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName) VALUES(?, ?, ?, ?)";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setInt(1, gameID);
+                preparedStatement.setString(2, whiteUsername);
+                preparedStatement.setString(3, blackUsername);
+                preparedStatement.setString(4, gameName);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -32,14 +36,14 @@ public class SQLGameDAO extends GameDAO {
     }
 
     public GameData findGame(int gameID) throws DataAccessException {
-        //TODO: again, check the "FROM"
-        var insertString = "SELECT gameID FROM game WHERE gameID = \"" + gameID + "\"";
+        var insertString = "SELECT gameID FROM game WHERE gameID=?";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setInt(1, gameID);
+                try (var rs = preparedStatement.executeQuery()) {
+                    return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+                }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find game: %s", ex.getMessage()));
@@ -51,8 +55,8 @@ public class SQLGameDAO extends GameDAO {
         var insertString = "SELECT * FROM game";
         String gameDataJson;
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
                         gameDataJson = rs.getString("gameDataJson");
@@ -67,30 +71,30 @@ public class SQLGameDAO extends GameDAO {
     }
 
     public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
-        String playerColor = (color.equals("WHITE")) ? "whiteUsername" : (color.equals("BLACK") ? "blackUsername" : null);
-        //TODO: check syntax for insertPlayer
-        var insertPlayer = "UPDATE game SET " + userName + " SET " + playerColor + " WHERE gameID = \"" + gameID + "\"";
-        var insertString = "SELECT gameID FROM game where gameID = \"" + gameID + "\"";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
-                try (var rs = preparedStatement.executeQuery()) { //TODO: is this the proper order of things?
-                    rs.next();
-                    try (var statement = connection.prepareStatement(insertPlayer)) {
-                        statement.executeUpdate();
-                    }
+        try (var conn = DatabaseManager.getConnection()) {
+            if (color.equalsIgnoreCase("WHITE")) {
+                String insertString = "UPDATE game SET whiteUsername=? WHERE gameID=?";
+                try (var preparedStatement = conn.prepareStatement(insertString)) {
+                    preparedStatement.setString(1, userName);
+                    preparedStatement.executeUpdate();
                 }
-            }
+            } else if (color.equalsIgnoreCase("BLACK")) {
+                String insertString = "UPDATE game SET blackUsername=? WHERE gameID=?";
+                try (var preparedStatement = conn.prepareStatement(insertString)) {
+                    preparedStatement.setString(1, userName);
+                    preparedStatement.executeUpdate();
+                }
+            } // Do we need to check for null color?
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to list games: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to join game: %s", ex.getMessage()));
         }
-
     }
 
     public void clearTokens() throws DataAccessException {
         var insertString = "DELETE FROM game";
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();
             }
         }  catch (SQLException ex) {
@@ -98,14 +102,14 @@ public class SQLGameDAO extends GameDAO {
         }
     }
 
-    private final String[] buildStatement = { //TODO: figure out what primary key is, figure out proper statement
+    private final String[] buildString = {
             """
             CREATE TABLE IF NOT EXISTS game (
-            'game' JSON NOT NULL,
-            'gameID' INT NOT NULL,
-            'userName' VARCHAR(100) NOT NULL,
-            'color' VARCHAR(100) NOT NULL,
-            PRIMARY KEY ('game')
+            gameID INT NOT NULL,
+            whiteUsername VARCHAR(255) NOT NULL,
+            blackUsername VARCHAR(255) NOT NULL,
+            gameName VARCHAR(255) NOT NULL
+            PRIMARY KEY (gameID)
             );
             """
     };
@@ -113,7 +117,7 @@ public class SQLGameDAO extends GameDAO {
     private void configureDataBase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : buildStatement) {
+            for (var statement : buildString) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
