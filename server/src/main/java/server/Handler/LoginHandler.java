@@ -6,14 +6,21 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class  LoginHandler implements Route {
+public class LoginHandler implements Route {
+
+    public final LoginService loginService;
+
+    public LoginHandler(LoginService loginService) {
+        this.loginService = loginService;
+    }
+
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
 
         try {
-            LoginService.LoginRequest request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
-            LoginService.LoginResult result = LoginService.login(request);
+            var request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
+            var result = loginService.login(request);
             switch(result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);

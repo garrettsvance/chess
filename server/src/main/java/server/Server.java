@@ -6,27 +6,29 @@ import spark.*;
 
 public class Server {
 
-    private final AuthTokenDAO authDAO;
-    private final GameDAO gameDAO;
-    private final UserDAO userDAO;
+    public int run(int desiredPort) {
 
-    public Server() {
+        AuthTokenDAO authDAO;
+        GameDAO gameDAO;
+        UserDAO userDAO;
+
+        Spark.port(desiredPort);
+
+        Spark.staticFiles.location("web");
+
         try{
+            DatabaseManager.createDatabase();
             userDAO = new SQLUserDAO();
             authDAO = new SQLAuthTokenDAO();
             gameDAO = new SQLGameDAO();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
+
+        LoginService loginService = new LoginService(userDAO, authDAO);
 
 
-    public int run(int desiredPort) {
-        Spark.port(desiredPort);
-
-        Spark.staticFiles.location("web");
-
-        Spark.post("/session", new server.Handler.LoginHandler());
+        Spark.post("/session", new server.Handler.LoginHandler(loginService));
         Spark.delete("/db", new server.Handler.ClearApplicationHandler());
         Spark.post("/user", new server.Handler.RegisterHandler());
         Spark.delete("/session", new server.Handler.LogoutHandler());
@@ -43,22 +45,22 @@ public class Server {
         Spark.awaitStop();
     }
 
-    public Object handleLogin(Request sparkRequest, Response response) throws Exception {
-        Gson gson = new Gson();
-        try {
-            LoginService.LoginRequest request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
-            LoginService.LoginResult result = LoginService.login(request);
-            switch(result.message()) {
-                case "success" -> response.status(200);
-                case "Error: unauthorized" -> response.status(401);
-            }
-            return gson.toJson(result);
-        } catch(Exception e) {
-            LoginService.LoginResult result = new LoginService.LoginResult(null, null, "Error:" + e.getMessage());
-            response.status(500);
-            return gson.toJson(result);
-        }
-    }
+//    public Object handleLogin(Request sparkRequest, Response response) throws Exception {
+//        Gson gson = new Gson();
+//        try {
+//            LoginService.LoginRequest request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
+//            LoginService.LoginResult result = LoginService.login(request);
+//            switch(result.message()) {
+//                case "success" -> response.status(200);
+//                case "Error: unauthorized" -> response.status(401);
+//            }
+//            return gson.toJson(result);
+//        } catch(Exception e) {
+//            LoginService.LoginResult result = new LoginService.LoginResult(null, null, "Error:" + e.getMessage());
+//            response.status(500);
+//            return gson.toJson(result);
+//        }
+//    }
 
 
 }
