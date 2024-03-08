@@ -43,21 +43,6 @@ public class Server {
         Spark.awaitStop();
     }
 
-//    private Object login(Request request, Response response) throws Exception {
-//        return LoginHandler.handle(request, response);
-//    }
-//
-//    private Object clearApplication(Request request, Response response) throws Exception {
-//        return ClearApplicationHandler.handle(request, response);
-//    }
-//
-//    private Object register(Request request, Response response) throws Exception {
-//        return RegisterHandler.handle(request, response);
-//    }
-//    private Object logout(Request request, Response response) throws Exception {
-//        return LogoutHandler.handle(request, response);
-//    }
-
     public Object handleLogin(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
@@ -77,3 +62,19 @@ public class Server {
 
 
 }
+
+
+//    private Object login(Request request, Response response) throws Exception {
+//        return LoginHandler.handle(request, response);
+//    }
+//
+//    private Object clearApplication(Request request, Response response) throws Exception {
+//        return ClearApplicationHandler.handle(request, response);
+//    }
+//
+//    private Object register(Request request, Response response) throws Exception {
+//        return RegisterHandler.handle(request, response);
+//    }
+//    private Object logout(Request request, Response response) throws Exception {
+//        return LogoutHandler.handle(request, response);
+//    }
