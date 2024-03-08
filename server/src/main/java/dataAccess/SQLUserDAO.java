@@ -56,8 +56,6 @@ public class SQLUserDAO extends UserDAO {
         }
     }
 
-
-
     public void clearTokens() throws DataAccessException {
         var insertString = "DELETE FROM user";
         try (var conn = DatabaseManager.getConnection()) {

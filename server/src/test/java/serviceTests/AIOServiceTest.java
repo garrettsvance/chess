@@ -1,4 +1,5 @@
 package serviceTests;
+import dataAccess.DataAccessException;
 import service.ClearApplicationService;
 import service.CreateGameService;
 import service.JoinGameService;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class AIOServiceTest {
@@ -81,7 +83,7 @@ public class AIOServiceTest {
     @Test
     @Order(8)
     @DisplayName("Create Game service Test - Positive")
-    public void createGood() {
+    public void createGood() throws DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("creategametestgood", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestgood", "password"));
         String authToken = login.authToken();
@@ -93,7 +95,7 @@ public class AIOServiceTest {
     @Test
     @Order(9)
     @DisplayName("Create Game Test - Negative")
-    public void createBad() {
+    public void createBad() throws DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("creategametestbad", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestbad", "password"));
         String authToken = login.authToken();
@@ -105,7 +107,7 @@ public class AIOServiceTest {
     @Test
     @Order(10)
     @DisplayName("List All Games Test - Positive")
-    public void listAllGood() {
+    public void listAllGood() throws SQLException, DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("listgamestestgood", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("listgamestestgood", "password"));
         String authToken = login.authToken();
@@ -117,7 +119,7 @@ public class AIOServiceTest {
     @Test
     @Order(11)
     @DisplayName("List All Games Test - Negative")
-    public void listAllBad() {
+    public void listAllBad() throws SQLException, DataAccessException {
         String authToken = UUID.randomUUID().toString();
         ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
@@ -127,7 +129,7 @@ public class AIOServiceTest {
     @Test
     @Order(12)
     @DisplayName("Join Game Test - Positive")
-    public void joinGameGood() {
+    public void joinGameGood() throws DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("joingametestgood", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestgood", "password"));
         String authToken = login.authToken();
@@ -141,7 +143,7 @@ public class AIOServiceTest {
     @Test
     @Order(13)
     @DisplayName("Join Game Test - Negative")
-    public void joinGameBad() {
+    public void joinGameBad() throws DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("joingametestbad", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestbad", "password"));
         String authToken = login.authToken();
