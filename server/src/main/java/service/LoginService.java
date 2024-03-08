@@ -1,4 +1,5 @@
 package service;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import dataAccess.AuthTokenDAO;
 import dataAccess.UserDAO;
@@ -13,7 +14,7 @@ public class LoginService {
     static UserDAO userMap = new UserDAO();
     static AuthTokenDAO authDAO = new AuthTokenDAO();
 
-    public static LoginResult login(LoginRequest request) {
+    public static LoginResult login(LoginRequest request) throws DataAccessException {
         String userName = request.username();
         String passWord = request.password();
 

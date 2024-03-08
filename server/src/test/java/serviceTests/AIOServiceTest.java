@@ -28,7 +28,7 @@ public class AIOServiceTest {
     @Test
     @Order(2)
     @DisplayName("Register User Test - Positive")
-    public void registerGood() {
+    public void registerGood() throws SQLException, DataAccessException {
         RegisterService.RegisterResult result = RegisterService.register(new RegisterService.RegisterRequest("garrett13", "password", "email"));
         Assertions.assertEquals("success", result.message());
     }
@@ -36,7 +36,7 @@ public class AIOServiceTest {
     @Test
     @Order(3)
     @DisplayName("Register User Test - Negative")
-    public void registerBad() {
+    public void registerBad() throws SQLException, DataAccessException {
         RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
         RegisterService.RegisterResult result = RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
         RegisterService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
@@ -46,7 +46,7 @@ public class AIOServiceTest {
     @Test
     @Order(4)
     @DisplayName("Log In User Test - Positive")
-    public void logInGood() {
+    public void logInGood() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("garrett11", "password", "email"));
         LoginService.LoginResult result = LoginService.login(new LoginService.LoginRequest("garrett11", "password"));
         Assertions.assertEquals("success", result.message());
@@ -55,7 +55,7 @@ public class AIOServiceTest {
     @Test
     @Order(5)
     @DisplayName("Log In User Test - Negative")
-    public void logInBad() {
+    public void logInBad() throws DataAccessException {
         LoginService.LoginResult result = LoginService.login(new LoginService.LoginRequest("garrett", "wrongpassword"));
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
@@ -63,7 +63,7 @@ public class AIOServiceTest {
     @Test
     @Order(6)
     @DisplayName("Log out User Test - Positive")
-    public void logOutGood() {
+    public void logOutGood() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("logouttest", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("logouttest", "password"));
         String authToken = login.authToken();
@@ -74,7 +74,7 @@ public class AIOServiceTest {
     @Test
     @Order(7)
     @DisplayName("Log Out User Test - Negative")
-    public void logOutBad() {
+    public void logOutBad() throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         LogoutService.LogoutResult result = LogoutService.logout(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
@@ -83,7 +83,7 @@ public class AIOServiceTest {
     @Test
     @Order(8)
     @DisplayName("Create Game service Test - Positive")
-    public void createGood() throws DataAccessException {
+    public void createGood() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("creategametestgood", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestgood", "password"));
         String authToken = login.authToken();
@@ -95,7 +95,7 @@ public class AIOServiceTest {
     @Test
     @Order(9)
     @DisplayName("Create Game Test - Negative")
-    public void createBad() throws DataAccessException {
+    public void createBad() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("creategametestbad", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("creategametestbad", "password"));
         String authToken = login.authToken();
@@ -129,7 +129,7 @@ public class AIOServiceTest {
     @Test
     @Order(12)
     @DisplayName("Join Game Test - Positive")
-    public void joinGameGood() throws DataAccessException {
+    public void joinGameGood() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("joingametestgood", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestgood", "password"));
         String authToken = login.authToken();
@@ -143,7 +143,7 @@ public class AIOServiceTest {
     @Test
     @Order(13)
     @DisplayName("Join Game Test - Negative")
-    public void joinGameBad() throws DataAccessException {
+    public void joinGameBad() throws DataAccessException, SQLException {
         RegisterService.register(new RegisterService.RegisterRequest("joingametestbad", "password", "email"));
         LoginService.LoginResult login = LoginService.login(new LoginService.LoginRequest("joingametestbad", "password"));
         String authToken = login.authToken();

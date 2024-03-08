@@ -3,6 +3,7 @@ import model.AuthData;
 import model.UserData;
 import dataAccess.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class RegisterService {
@@ -12,7 +13,7 @@ public class RegisterService {
     static UserDAO userDAO = new UserDAO();
     static AuthTokenDAO authDAO = new AuthTokenDAO();
 
-    public static RegisterResult register(RegisterRequest request) {
+    public static RegisterResult register(RegisterRequest request) throws DataAccessException, SQLException {
         if (request.email() == null || request.username() == null || request.password() == null) {
             return new RegisterResult(null, null, "Error: bad request");
         }
