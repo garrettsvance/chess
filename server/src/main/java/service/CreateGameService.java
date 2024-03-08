@@ -1,8 +1,8 @@
 package service;
 import dataAccess.DataAccessException;
 import model.GameData;
-import dataAccess.AuthTokenDAO;
-import dataAccess.GameDAO;
+import dataAccess.MemoryAuthTokenDAO;
+import dataAccess.MemoryGameDAO;
 
 import java.util.UUID;
 
@@ -10,8 +10,8 @@ public class CreateGameService {
 
     public record CreateGameRequest(String gameName) {}
     public record CreateGameResult(Integer gameID, String message) {}
-    static AuthTokenDAO authDAO = new AuthTokenDAO();
-    static GameDAO gameMap = new GameDAO();
+    static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
+    static MemoryGameDAO gameMap = new MemoryGameDAO();
 
     public static CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         String gameName = request.gameName();

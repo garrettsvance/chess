@@ -6,24 +6,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
-public class SQLUserDAO extends UserDAO {
+public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException, SQLException {
         configureDataBase();
     }
 
-    private static String encrypt(String password) {
+    public String encrypt(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
 
-    private boolean checkPassword(String oldPassword, String newPassword) {
+    public boolean checkPassword(String oldPassword, String newPassword) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.matches(newPassword, oldPassword);
     }
 
 
-    public static void insertUser(UserData userInfo) throws DataAccessException, SQLException {
+    public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         String userName = userInfo.getUserName();
         String encryptedPassword = encrypt(userInfo.getPassword());
         String email = userInfo.getEmail();

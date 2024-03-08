@@ -4,7 +4,7 @@ import model.AuthData;
 
 import java.sql.SQLException;
 
-public class SQLAuthTokenDAO extends AuthTokenDAO { //TODO: extends vs implements
+public class SQLAuthTokenDAO implements AuthTokenDAO { //TODO: extends vs implements
 
     public SQLAuthTokenDAO() throws DataAccessException {
         configureDataBase();

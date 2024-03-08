@@ -1,23 +1,14 @@
 package server;
-import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import dataAccess.*;
-import server.Handler.*;
-import service.*;
-import model.UserData;
-import org.eclipse.jetty.websocket.server.WebSocketServerConnection;
 import service.*;
 import spark.*;
 
-import javax.xml.crypto.Data;
-import java.nio.file.Paths;
-import java.sql.SQLException;
-
 public class Server {
 
-    private final UserDAO userDAO;
     private final AuthTokenDAO authDAO;
     private final GameDAO gameDAO;
+    private final UserDAO userDAO;
 
     public Server() {
         try{

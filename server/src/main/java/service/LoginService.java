@@ -1,8 +1,8 @@
 package service;
 import dataAccess.DataAccessException;
 import model.AuthData;
-import dataAccess.AuthTokenDAO;
-import dataAccess.UserDAO;
+import dataAccess.MemoryAuthTokenDAO;
+import dataAccess.MemoryUserDAO;
 import java.util.UUID;
 
 
@@ -11,13 +11,13 @@ public class LoginService {
 
     public record LoginRequest(String username, String password) {}
 
-    public LoginService(UserDAO userDAO, AuthTokenDAO) {
+    public LoginService(MemoryUserDAO memoryUserDAO, MemoryAuthTokenDAO) {
 
     }
 
     public record LoginResult(String username, String authToken, String message) {}
-    static UserDAO userMap = new UserDAO();
-    static AuthTokenDAO authDAO = new AuthTokenDAO();
+    static MemoryUserDAO userMap = new MemoryUserDAO();
+    static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
     public static LoginResult login(LoginRequest request) throws DataAccessException {
         String userName = request.username();

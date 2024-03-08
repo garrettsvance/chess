@@ -1,25 +1,21 @@
 package dataAccess;
+
 import model.UserData;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
+public interface UserDAO {
 
-public class UserDAO {
+    String encrypt(String password);
 
-    static Map<String, UserData> userMap = new HashMap<>();
+    boolean checkPassword(String oldPassword, String newPassword);
 
-    public static void insertUser(UserData userInfo) throws DataAccessException, SQLException {
-        userMap.put(userInfo.getUserName(), userInfo);
-    }
+    void insertUser(UserData userInfo) throws DataAccessException, SQLException;
 
-    public UserData findUser(String userName) throws DataAccessException {
-        return userMap.get(userName);
-    }
+    UserData verifyUser(UserData userInfo) throws DataAccessException;
 
-    public void clearTokens() throws DataAccessException {
-        userMap.clear();
-    }
+    UserData findUser(String userName) throws DataAccessException;
+
+    void clearTokens() throws DataAccessException;
 
 }

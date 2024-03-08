@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class SQLGameDAO extends GameDAO {
+public class SQLGameDAO implements GameDAO {
 
     public SQLGameDAO () throws DataAccessException {
         configureDataBase();

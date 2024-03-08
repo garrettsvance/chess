@@ -2,8 +2,8 @@ package service;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
-import dataAccess.AuthTokenDAO;
-import dataAccess.GameDAO;
+import dataAccess.MemoryAuthTokenDAO;
+import dataAccess.MemoryGameDAO;
 
 
 
@@ -13,8 +13,8 @@ public class JoinGameService {
     public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
     public record JoinGameResult(String playerColor, Integer gameID, String message) {}
 
-    static GameDAO gameMap = new GameDAO();
-    static AuthTokenDAO authDAO = new AuthTokenDAO();
+    static MemoryGameDAO gameMap = new MemoryGameDAO();
+    static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
     public static JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
         AuthData userToken = authDAO.findToken(authToken);
