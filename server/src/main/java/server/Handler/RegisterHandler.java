@@ -7,12 +7,16 @@ import spark.Response;
 import spark.Route;
 
 public class RegisterHandler implements Route {
+
+    public final RegisterService registerService;
+
+    public RegisterHandler(RegisterService registerService) {this.registerService = registerService;}
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
-            RegisterService.RegisterRequest request = gson.fromJson(sparkRequest.body(), RegisterService.RegisterRequest.class);
-            RegisterService.RegisterResult result = RegisterService.register(request);
+            var request = gson.fromJson(sparkRequest.body(), RegisterService.RegisterRequest.class);
+            var result = registerService.register(request);
             switch (result.message()) {
                 case "success" -> response.status(200);
                 case "Error: bad request" -> response.status(400);
@@ -20,7 +24,7 @@ public class RegisterHandler implements Route {
             }
             return gson.toJson(result);
         } catch(Exception e) {
-            RegisterService.RegisterResult result = new RegisterService.RegisterResult(null, null, "Error:" + e.getMessage());
+            var result = new RegisterService.RegisterResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

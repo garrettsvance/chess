@@ -26,11 +26,12 @@ public class Server {
         }
 
         LoginService loginService = new LoginService(userDAO, authDAO);
+        RegisterService registerService = new RegisterService(userDAO, authDAO);
 
 
         Spark.post("/session", new server.Handler.LoginHandler(loginService));
         Spark.delete("/db", new server.Handler.ClearApplicationHandler());
-        Spark.post("/user", new server.Handler.RegisterHandler());
+        Spark.post("/user", new server.Handler.RegisterHandler(registerService));
         Spark.delete("/session", new server.Handler.LogoutHandler());
         Spark.get("/game", new server.Handler.ListGamesHandler());
         Spark.post("/game", new server.Handler.CreateGameHandler());

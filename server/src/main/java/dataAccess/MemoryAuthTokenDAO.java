@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 import model.AuthData;
 
-public class MemoryAuthTokenDAO {
+public class MemoryAuthTokenDAO implements AuthTokenDAO {
 
     static Map<String, AuthData> authMap = new HashMap<>();
 

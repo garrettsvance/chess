@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryGameDAO {
+public class MemoryGameDAO implements GameDAO {
 
     static Map<Integer, GameData> gameMap = new HashMap<>();
 

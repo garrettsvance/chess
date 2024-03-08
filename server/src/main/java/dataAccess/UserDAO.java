@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 public interface UserDAO {
 
-    String encrypt(String password);
 
     boolean checkPassword(String oldPassword, String newPassword);
 
