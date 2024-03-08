@@ -27,10 +27,13 @@ public class SQLUserDAO extends UserDAO {
         String userName = userInfo.getUserName();
         String encryptedPassword = encrypt(userInfo.getPassword());
         String email = userInfo.getEmail();
-        var insertString = "INSERT INTO user (username, password, email)" + "VALUES (\"" + userName + "\", \"" + encryptedPassword + "\", \"" + email + "\")";
+        var insertString = "INSERT INTO user (username, password, email) VALUES(?, ?, ?)";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, userName);
+                preparedStatement.setString(2, encryptedPassword);
+                preparedStatement.setString(3, email);
                 preparedStatement.executeUpdate();
             } catch (SQLException ex) {
                 throw new DataAccessException(String.format("Unable to insert User: %s", ex.getMessage()));
@@ -39,13 +42,14 @@ public class SQLUserDAO extends UserDAO {
     }
 
     public UserData findUser(String userName) throws DataAccessException {
-        var insertString = "SELECT username FROM user where username = \"" + userName + "\"" ;
+        var insertString = "SELECT username FROM user where username=?";
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, userName);
+                try (var rs = preparedStatement.executeQuery()) {
+                    return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find User: %s", ex.getMessage()));
@@ -56,8 +60,8 @@ public class SQLUserDAO extends UserDAO {
 
     public void clearTokens() throws DataAccessException {
         var insertString = "DELETE FROM user";
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connection.prepareStatement(insertString)) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();
             }
         }  catch (SQLException ex) {
@@ -65,10 +69,13 @@ public class SQLUserDAO extends UserDAO {
         }
     }
 
-    private final String[] buildStatement = { //TODO: figure out what primary key is, figure out proper statement
+    private final String[] buildString = { //TODO: figure out what primary key is, figure out proper statement
             """
-            CREATE TABLE IF NOT EXISTS (
-            PRIMARY KEY ('')
+            CREATE TABLE IF NOT EXISTS user (
+            username VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            PRIMARY KEY (username)
             );
             """
     };
@@ -76,7 +83,7 @@ public class SQLUserDAO extends UserDAO {
     private void configureDataBase() throws SQLException, DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : buildStatement) {
+            for (var statement : buildString) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }

@@ -53,14 +53,13 @@ public class SQLGameDAO extends GameDAO {
     public Collection<GameData> findAll() throws DataAccessException, SQLException {
         var gameList = new HashSet<GameData>();
         var insertString = "SELECT * FROM game";
-        String gameDataJson;
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
-                        gameDataJson = rs.getString("gameDataJson");
-                        gameList.add(new Gson().fromJson(gameDataJson, GameData.class));
+                        GameData tempGame = new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+                        gameList.add(tempGame);
                     }
                     return gameList;
                 }
@@ -108,7 +107,7 @@ public class SQLGameDAO extends GameDAO {
             gameID INT NOT NULL,
             whiteUsername VARCHAR(255) NOT NULL,
             blackUsername VARCHAR(255) NOT NULL,
-            gameName VARCHAR(255) NOT NULL
+            gameName VARCHAR(255) NOT NULL,
             PRIMARY KEY (gameID)
             );
             """
