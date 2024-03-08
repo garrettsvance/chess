@@ -12,7 +12,7 @@ public class SQLUserDAO extends UserDAO {
         configureDataBase();
     }
 
-    private String encrypt(String password) {
+    private static String encrypt(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
@@ -23,7 +23,7 @@ public class SQLUserDAO extends UserDAO {
     }
 
 
-    public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
+    public static void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         String userName = userInfo.getUserName();
         String encryptedPassword = encrypt(userInfo.getPassword());
         String email = userInfo.getEmail();
@@ -36,9 +36,29 @@ public class SQLUserDAO extends UserDAO {
                 preparedStatement.setString(3, email);
                 preparedStatement.executeUpdate();
             } catch (SQLException ex) {
-                throw new DataAccessException(String.format("Unable to insert User: %s", ex.getMessage()));
+                throw new DataAccessException(String.format("Unable to insert user: %s", ex.getMessage()));
             }
         }
+    }
+
+    public UserData verifyUser(UserData userInfo) throws DataAccessException {
+        String userName = userInfo.getUserName();
+        String password = userInfo.getPassword();
+        var insertString = "SELECT username, password FROM users WHERE username=?";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setString(1, userName);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (checkPassword(rs.getString("password"), password)) {
+                        return userInfo;
+                    }
+                }
+            }
+        }  catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to verify user: %s", ex.getMessage()));
+        }
+        return null;
     }
 
     public UserData findUser(String userName) throws DataAccessException {

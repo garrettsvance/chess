@@ -10,7 +10,7 @@ public class UserDAO {
 
     static Map<String, UserData> userMap = new HashMap<>();
 
-    public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
+    public static void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         userMap.put(userInfo.getUserName(), userInfo);
     }
 
