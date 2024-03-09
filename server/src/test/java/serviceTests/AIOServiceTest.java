@@ -32,6 +32,7 @@ public class AIOServiceTest {
         loginService = new LoginService(userDAO, authDAO);
         registerService = new RegisterService(userDAO, authDAO);
         clearApplicationService = new ClearApplicationService(userDAO, authDAO, gameDAO);
+        logoutService = new LogoutService(authDAO);
     }
 
     @Test
