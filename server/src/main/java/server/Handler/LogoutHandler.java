@@ -7,12 +7,16 @@ import spark.Route;
 import service.LogoutService;
 
 public class LogoutHandler implements Route {
+
+    public final LogoutService logoutService;
+
+    public LogoutHandler(LogoutService logoutService) {this.logoutService = logoutService;}
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
             String authToken = sparkRequest.headers("authorization");
-            LogoutService.LogoutResult result = LogoutService.logout(authToken);
+            var result = logoutService.logout(authToken);
             switch(result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);

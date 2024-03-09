@@ -22,6 +22,7 @@ public class AIOServiceTest {
     LoginService loginService;
     RegisterService registerService;
     ClearApplicationService clearApplicationService;
+    LogoutService logoutService;
 
     @BeforeEach
     public void setUp() {
@@ -83,7 +84,7 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("logouttest", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("logouttest", "password", "email"));
         String authToken = login.authToken();
-        LogoutService.LogoutResult result = LogoutService.logout(authToken);
+        LogoutService.LogoutResult result = logoutService.logout(authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -92,7 +93,7 @@ public class AIOServiceTest {
     @DisplayName("Log Out User Test - Negative")
     public void logOutBad() throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        LogoutService.LogoutResult result = LogoutService.logout(authToken);
+        LogoutService.LogoutResult result = logoutService.logout(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
