@@ -1,25 +1,31 @@
 package service;
-import dataAccess.DataAccessException;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
-import dataAccess.MemoryAuthTokenDAO;
-import dataAccess.MemoryGameDAO;
-
-
 
 
 public class JoinGameService {
 
+    private AuthTokenDAO authDAO;
+    private GameDAO gameDAO;
+
+    public JoinGameService(AuthTokenDAO authDAO, GameDAO gameDAO) {
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+    }
+
+
+
     public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
     public record JoinGameResult(String playerColor, Integer gameID, String message) {}
 
-    static MemoryGameDAO gameMap = new MemoryGameDAO();
-    static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
+    //static MemoryGameDAO gameMap = new MemoryGameDAO();
+    //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
-    public static JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
+    public JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
         AuthData userToken = authDAO.findToken(authToken);
         int gameID = request.gameID();
-        GameData game = gameMap.findGame(gameID);
+        GameData game = gameDAO.findGame(gameID);
 
         if (authDAO.findToken(authToken) == null) {
             return new JoinGameResult(null, null, "Error: unauthorized");
@@ -32,13 +38,13 @@ public class JoinGameService {
             return new JoinGameResult(null, null, "success");
         } else if (playerColor.equalsIgnoreCase("white")) {
             if (game.getWhiteUsername() == null) {
-                gameMap.claimSpot(userName, playerColor, gameID);
+                gameDAO.claimSpot(userName, playerColor, gameID);
                 return new JoinGameResult(null, null, "success");
             } else {
                 return new JoinGameResult(null, null, "Error: already taken");
             }
         } else if (game.getBlackUsername() == null) {
-            gameMap.claimSpot(userName, playerColor, gameID);
+            gameDAO.claimSpot(userName, playerColor, gameID);
             return new JoinGameResult(null, null, "success");
         } else {
             return new JoinGameResult(null, null, "Error: already taken");

@@ -25,6 +25,7 @@ public class AIOServiceTest {
     LogoutService logoutService;
     ListGameService listGameService;
     CreateGameService createGameService;
+    JoinGameService joinGameService;
 
     @BeforeEach
     public void setUp() {
@@ -37,6 +38,7 @@ public class AIOServiceTest {
         logoutService = new LogoutService(authDAO);
         listGameService = new ListGameService(authDAO, gameDAO);
         createGameService = new CreateGameService(authDAO, gameDAO);
+        joinGameService = new JoinGameService(authDAO, gameDAO);
     }
 
     @Test
@@ -157,7 +159,7 @@ public class AIOServiceTest {
         String authToken = login.authToken();
         CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game2"), authToken);
         Integer gameID = create.gameID();
-        JoinGameService.JoinGameResult result = JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -171,8 +173,8 @@ public class AIOServiceTest {
         String authToken = login.authToken();
         CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game3"), authToken);
         Integer gameID = create.gameID();
-        JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
-        JoinGameService.JoinGameResult result = JoinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("Error: already taken", result.message());
     }
 

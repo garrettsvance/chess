@@ -7,13 +7,18 @@ import spark.Response;
 import spark.Route;
 
 public class JoinGameHandler implements Route {
+
+    public final JoinGameService joinGameService;
+
+    public JoinGameHandler(JoinGameService joinGameService) {this.joinGameService = joinGameService;}
+
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
             JoinGameService.JoinGameRequest request = gson.fromJson(sparkRequest.body(), JoinGameService.JoinGameRequest.class);
             String authToken = sparkRequest.headers("Authorization");
-            JoinGameService.JoinGameResult result = JoinGameService.joinGame(request, authToken);
+            JoinGameService.JoinGameResult result = joinGameService.joinGame(request, authToken);
             switch (result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);

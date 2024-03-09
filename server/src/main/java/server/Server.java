@@ -31,6 +31,7 @@ public class Server {
         LogoutService logoutService = new LogoutService(authDAO);
         ListGameService listGameService = new ListGameService(authDAO, gameDAO);
         CreateGameService createGameService = new CreateGameService(authDAO, gameDAO);
+        JoinGameService joinGameService = new JoinGameService(authDAO, gameDAO);
 
 
         Spark.post("/session", new server.Handler.LoginHandler(loginService));
@@ -39,7 +40,7 @@ public class Server {
         Spark.delete("/session", new server.Handler.LogoutHandler(logoutService));
         Spark.get("/game", new server.Handler.ListGamesHandler(listGameService));
         Spark.post("/game", new server.Handler.CreateGameHandler(createGameService));
-        Spark.put("/game", new server.Handler.JoinGameHandler());
+        Spark.put("/game", new server.Handler.JoinGameHandler(joinGameService));
 
         Spark.awaitInitialization();
         return Spark.port();
