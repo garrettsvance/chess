@@ -8,12 +8,16 @@ import spark.Route;
 
 public class ClearApplicationHandler implements Route {
 
+    public final ClearApplicationService clearApplicationService;
+
+    public ClearApplicationHandler(ClearApplicationService clearApplicationService) {this.clearApplicationService = clearApplicationService;}
+
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
-            ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
+            var result = clearApplicationService.clear();
             if (result.message().equals("success")) {
                 response.status(200);
             }

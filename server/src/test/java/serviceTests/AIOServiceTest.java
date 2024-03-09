@@ -2,6 +2,7 @@ package serviceTests;
 import dataAccess.*;
 import dataAccess.MemoryAuthTokenDAO;
 import org.junit.jupiter.api.*;
+import server.Handler.ClearApplicationHandler;
 import service.ClearApplicationService;
 import service.CreateGameService;
 import service.JoinGameService;
@@ -20,6 +21,7 @@ public class AIOServiceTest {
     GameDAO gameDAO;
     LoginService loginService;
     RegisterService registerService;
+    ClearApplicationService clearApplicationService;
 
     @BeforeEach
     public void setUp() {
@@ -28,13 +30,14 @@ public class AIOServiceTest {
         gameDAO = new MemoryGameDAO();
         loginService = new LoginService(userDAO, authDAO);
         registerService = new RegisterService(userDAO, authDAO);
+        clearApplicationService = new ClearApplicationService(userDAO, authDAO, gameDAO);
     }
 
     @Test
     @Order(1)
     @DisplayName("Clear Application Test 1")
     public void clearTest1() {
-        ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
+        ClearApplicationService.ClearApplicationResult result = clearApplicationService.clear();
         Assertions.assertEquals("success", result.message());
     }
 
@@ -172,7 +175,7 @@ public class AIOServiceTest {
     @Order(14)
     @DisplayName("Clear Application Test 2")
     public void clearTest2() {
-        ClearApplicationService.ClearApplicationResult result = ClearApplicationService.clear();
+        ClearApplicationService.ClearApplicationResult result = clearApplicationService.clear();
         Assertions.assertEquals("success", result.message());
     }
 

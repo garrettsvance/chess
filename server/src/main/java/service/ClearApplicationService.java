@@ -3,13 +3,23 @@ import dataAccess.*;
 
 public class ClearApplicationService {
 
+    private UserDAO userDAO;
+    private AuthTokenDAO authDAO;
+    private GameDAO gameDAO;
+
+    public ClearApplicationService(UserDAO userDAO, AuthTokenDAO authDAO, GameDAO gameDAO) {
+        this.userDAO = userDAO;
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+    }
+
     public record ClearApplicationResult(String message) {}
 
-    public static ClearApplicationResult clear() {
+    public ClearApplicationResult clear() {
         try {
-            new MemoryAuthTokenDAO().clearTokens();
-            new MemoryUserDAO().clearTokens();
-            new MemoryGameDAO().clearTokens();
+            userDAO.clearTokens();
+            authDAO.clearTokens();
+            gameDAO.clearTokens();
             return new ClearApplicationResult("success");
         } catch (DataAccessException e) {
             return new ClearApplicationResult("error" + e.getMessage());
