@@ -23,6 +23,7 @@ public class AIOServiceTest {
     RegisterService registerService;
     ClearApplicationService clearApplicationService;
     LogoutService logoutService;
+    ListGameService listGameService;
 
     @BeforeEach
     public void setUp() {
@@ -33,6 +34,7 @@ public class AIOServiceTest {
         registerService = new RegisterService(userDAO, authDAO);
         clearApplicationService = new ClearApplicationService(userDAO, authDAO, gameDAO);
         logoutService = new LogoutService(authDAO);
+        listGameService = new ListGameService(authDAO, gameDAO);
     }
 
     @Test
@@ -129,7 +131,7 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("listgamestestgood", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("listgamestestgood", "password", "email"));
         String authToken = login.authToken();
-        ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
+        ListGameService.ListGamesResult result = listGameService.listGames(authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -139,7 +141,7 @@ public class AIOServiceTest {
     @DisplayName("List All Games Test - Negative")
     public void listAllBad() throws SQLException, DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        ListGameService.ListGamesResult result = ListGameService.listGames(authToken);
+        ListGameService.ListGamesResult result = listGameService.listGames(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
