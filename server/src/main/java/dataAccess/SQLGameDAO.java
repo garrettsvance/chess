@@ -1,12 +1,11 @@
 package dataAccess;
 
-import com.google.gson.Gson;
 import model.GameData;
 
-import javax.xml.crypto.Data;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 public class SQLGameDAO implements GameDAO {
 
@@ -23,6 +22,7 @@ public class SQLGameDAO implements GameDAO {
         var insertString = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName) VALUES(?, ?, ?, ?)";
 
         try (var conn = DatabaseManager.getConnection()) {
+
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.setInt(1, gameID);
                 preparedStatement.setString(2, whiteUsername);
@@ -34,40 +34,77 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(String.format("Unable to insert game: %s", ex.getMessage()));
         }
     }
+    //  var insertWhiteString = "INSERT INTO game (gameID, whiteUsername, gameName) VALUES(?, ?, ?)";
+//        var insertBlackString = "INSERT INTO game (gameID, blackUsername, gameName) VALUES(?, ?, ?)";
+//        var insertNullString = "INSERT INTO game (gameID, gameName) VALUES(?, ?)";
+
+    //            if (game.getWhiteUsername() != null) {
+//                try (var preparedStatement = conn.prepareStatement(insertWhiteString)) {
+//                    preparedStatement.setInt(1, gameID);
+//                    preparedStatement.setString(2, whiteUsername);
+//                    preparedStatement.setString(3, gameName);
+//                    preparedStatement.executeUpdate();
+//                }
+//            }  else if (game.getBlackUsername() != null) {
+//                try (var preparedStatement = conn.prepareStatement(insertBlackString)) {
+//                    preparedStatement.setInt(1, gameID);
+//                    preparedStatement.setString(2, blackUsername);
+//                    preparedStatement.setString(3, gameName);
+//                    preparedStatement.executeUpdate();
+//                }
+//            } else {
+//                try (var preparedStatement = conn.prepareStatement(insertNullString)) {
+//                    preparedStatement.setInt(1, gameID);
+//                    preparedStatement.setString(2, gameName);
+//                    preparedStatement.executeUpdate();
+//                }
+//            }
 
     public GameData findGame(int gameID) throws DataAccessException {
-        var insertString = "SELECT gameID FROM game WHERE gameID=?";
+        var insertString = "SELECT * FROM game WHERE gameID=?";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
-                    return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+                    if (rs.next()) {
+                        return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+                    }
                 }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find game: %s", ex.getMessage()));
         }
+        return null;
     }
 
     public Collection<GameData> findAll() throws DataAccessException, SQLException {
-        var gameList = new HashSet<GameData>();
-        var insertString = "SELECT * FROM game";
+        var gameList = new ArrayList<GameData>();
+        var insertString = "SELECT gameID, whiteUsername, blackUsername, gameName FROM game";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
-                        GameData tempGame = new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
-                        gameList.add(tempGame);
+                        gameList.add(readGame(rs));
                     }
-                    return gameList;
                 }
-            } catch (SQLException ex) {
-                throw new DataAccessException(String.format("Unable to list games: %s", ex.getMessage()));
             }
+        }  catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to list games: %s", ex.getMessage()));
         }
+        return gameList;
     }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var gameID = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        //TODO: gamestate?
+        return new GameData(gameID, whiteUsername, blackUsername, gameName);
+    }
+
 
     public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
 
@@ -76,12 +113,14 @@ public class SQLGameDAO implements GameDAO {
                 String insertString = "UPDATE game SET whiteUsername=? WHERE gameID=?";
                 try (var preparedStatement = conn.prepareStatement(insertString)) {
                     preparedStatement.setString(1, userName);
+                    preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }
             } else if (color.equalsIgnoreCase("BLACK")) {
                 String insertString = "UPDATE game SET blackUsername=? WHERE gameID=?";
                 try (var preparedStatement = conn.prepareStatement(insertString)) {
                     preparedStatement.setString(1, userName);
+                    preparedStatement.setInt(2, gameID);
                     preparedStatement.executeUpdate();
                 }
             } // Do we need to check for null color?
@@ -91,7 +130,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     public void clearTokens() throws DataAccessException {
-        var insertString = "DELETE FROM game";
+        var insertString = "TRUNCATE game";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();
@@ -105,8 +144,8 @@ public class SQLGameDAO implements GameDAO {
             """
             CREATE TABLE IF NOT EXISTS game (
             gameID INT NOT NULL,
-            whiteUsername VARCHAR(255) NOT NULL,
-            blackUsername VARCHAR(255) NOT NULL,
+            whiteUsername VARCHAR(255) DEFAULT NULL,
+            blackUsername VARCHAR(255) DEFAULT NULL,
             gameName VARCHAR(255) NOT NULL,
             PRIMARY KEY (gameID)
             );

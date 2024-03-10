@@ -1,7 +1,6 @@
 package dataAccess;
 import model.GameData;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class MemoryGameDAO implements GameDAO {
         return gameMap.get(gameID);
     }
 
-    public Collection<GameData> findAll() throws DataAccessException, SQLException {
+    public Collection<GameData> findAll() throws DataAccessException {
         return gameMap.values();
     }
 

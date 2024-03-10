@@ -14,22 +14,23 @@ public class CreateGameService {
         this.gameDAO = gameDAO;
     }
 
-    public record CreateGameRequest(String gameName) {}
-    public record CreateGameResult(Integer gameID, String message) {}
+    public record CreateGameRequest(String gameName, String whiteUsername, String blackUsername) {}
+    public record CreateGameResult(GameData game, String message, Integer gameID) {}
     //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
     //static MemoryGameDAO gameMap = new MemoryGameDAO();
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         String gameName = request.gameName();
+
         int gameID = Math.abs(UUID.randomUUID().hashCode());
         if (authDAO.findToken(authToken) == null) {
-            return new CreateGameResult( null, "Error: unauthorized");
+            return new CreateGameResult( null, "Error: unauthorized", null);
         } else if (gameName == null){
-            return new CreateGameResult(null, "Error: bad request");
+            return new CreateGameResult(null, "Error: bad request", null);
         } else {
-            GameData game = new GameData(gameID, null, null, gameName);
+            GameData game = new GameData(gameID, request.whiteUsername(), request.blackUsername(), gameName);
             gameDAO.insertGame(game);
-            return new CreateGameResult(gameID, "success");
+            return new CreateGameResult(game, "success", game.getGameID());
         }
     }
 

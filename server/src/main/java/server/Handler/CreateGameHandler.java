@@ -27,7 +27,7 @@ public class CreateGameHandler implements Route {
             }
             return gson.toJson(result);
         } catch(Exception e) {
-            CreateGameService.CreateGameResult result = new CreateGameService.CreateGameResult(null, "Error:" + e.getMessage());
+            CreateGameService.CreateGameResult result = new CreateGameService.CreateGameResult(null, "Error:" + e.getMessage(), null);
             response.status(500);
             return gson.toJson(result);
         }

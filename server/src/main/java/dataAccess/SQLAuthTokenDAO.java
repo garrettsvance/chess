@@ -28,22 +28,25 @@ public class SQLAuthTokenDAO implements AuthTokenDAO { //TODO: extends vs implem
     }
 
     public AuthData findToken(String authToken) throws DataAccessException {
-        var insertString = "SELECT authToken FROM auth WHERE authToken=?";
+        var insertString = "SELECT authToken, username FROM auth WHERE authToken=?";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()) {
-                    return new AuthData(rs.getString("authToken"), rs.getString("username"));
+                    if (rs.next()) {
+                        return new AuthData(rs.getString("authToken"), rs.getString("username"));
+                    }
                 }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
         }
+        return null;
     }
 
     public void removeToken(String authToken) throws DataAccessException {
-        var insertString = "DELETE authToken FROM auth WHERE authToken=?";
+        var insertString = "DELETE FROM auth WHERE authToken=?";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
@@ -51,12 +54,12 @@ public class SQLAuthTokenDAO implements AuthTokenDAO { //TODO: extends vs implem
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to find token: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to remove token: %s", ex.getMessage()));
         }
     }
 
     public void clearTokens() throws DataAccessException {
-        var insertString = "DELETE FROM authToken";
+        var insertString = "TRUNCATE auth";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();

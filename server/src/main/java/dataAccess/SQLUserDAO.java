@@ -44,14 +44,16 @@ public class SQLUserDAO implements UserDAO {
     public UserData verifyUser(UserData userInfo) throws DataAccessException {
         String userName = userInfo.getUserName();
         String password = userInfo.getPassword();
-        var insertString = "SELECT username, password FROM users WHERE username=?";
+        var insertString = "SELECT username, password FROM user WHERE username=?";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
-                preparedStatement.setString(1, userName);
+                preparedStatement.setString(1, userInfo.getUserName());
                 try (var rs = preparedStatement.executeQuery()) {
-                    if (checkPassword(rs.getString("password"), password)) {
-                        return userInfo;
+                    if (rs.next()) {
+                        if (checkPassword(rs.getString("password"), password)) {
+                            return userInfo;
+                        }
                     }
                 }
             }
@@ -62,22 +64,25 @@ public class SQLUserDAO implements UserDAO {
     }
 
     public UserData findUser(String userName) throws DataAccessException {
-        var insertString = "SELECT username FROM user where username=?";
+        var insertString = "SELECT username, password, email FROM user WHERE username=?";
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.setString(1, userName);
                 try (var rs = preparedStatement.executeQuery()) {
-                    return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    if (rs.next()) {
+                        return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    }
                 }
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to find User: %s", ex.getMessage()));
         }
+        return null;
     }
 
     public void clearTokens() throws DataAccessException {
-        var insertString = "DELETE FROM user";
+        var insertString = "TRUNCATE user";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
                 preparedStatement.executeUpdate();

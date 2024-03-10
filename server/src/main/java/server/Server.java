@@ -1,5 +1,5 @@
 package server;
-import com.google.gson.Gson;
+
 import dataAccess.*;
 import service.*;
 import spark.*;
@@ -16,13 +16,21 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        try{
-            DatabaseManager.createDatabase();
-            userDAO = new SQLUserDAO();
-            authDAO = new SQLAuthTokenDAO();
-            gameDAO = new SQLGameDAO();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        if (false) {
+            userDAO = new MemoryUserDAO();
+            authDAO = new MemoryAuthTokenDAO();
+            gameDAO = new MemoryGameDAO();
+        } else {
+            try {
+                DatabaseManager.createDatabase();
+                userDAO = new SQLUserDAO();
+                authDAO = new SQLAuthTokenDAO();
+                gameDAO = new SQLGameDAO();
+            } catch (Exception e) {
+                System.out.println("Runtime Exception");
+                throw new RuntimeException(e);
+            }
         }
 
         LoginService loginService = new LoginService(userDAO, authDAO);
@@ -51,38 +59,4 @@ public class Server {
         Spark.awaitStop();
     }
 
-//    public Object handleLogin(Request sparkRequest, Response response) throws Exception {
-//        Gson gson = new Gson();
-//        try {
-//            LoginService.LoginRequest request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
-//            LoginService.LoginResult result = LoginService.login(request);
-//            switch(result.message()) {
-//                case "success" -> response.status(200);
-//                case "Error: unauthorized" -> response.status(401);
-//            }
-//            return gson.toJson(result);
-//        } catch(Exception e) {
-//            LoginService.LoginResult result = new LoginService.LoginResult(null, null, "Error:" + e.getMessage());
-//            response.status(500);
-//            return gson.toJson(result);
-//        }
-//    }
-
-
 }
-
-
-//    private Object login(Request request, Response response) throws Exception {
-//        return LoginHandler.handle(request, response);
-//    }
-//
-//    private Object clearApplication(Request request, Response response) throws Exception {
-//        return ClearApplicationHandler.handle(request, response);
-//    }
-//
-//    private Object register(Request request, Response response) throws Exception {
-//        return RegisterHandler.handle(request, response);
-//    }
-//    private Object logout(Request request, Response response) throws Exception {
-//        return LogoutHandler.handle(request, response);
-//    }

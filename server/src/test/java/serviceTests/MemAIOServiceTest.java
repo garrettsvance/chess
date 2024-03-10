@@ -2,7 +2,6 @@ package serviceTests;
 import dataAccess.*;
 import dataAccess.MemoryAuthTokenDAO;
 import org.junit.jupiter.api.*;
-import server.Handler.ClearApplicationHandler;
 import service.ClearApplicationService;
 import service.CreateGameService;
 import service.JoinGameService;
@@ -14,7 +13,7 @@ import service.RegisterService;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class AIOServiceTest {
+public class MemAIOServiceTest {
 
     AuthTokenDAO authDAO;
     UserDAO userDAO;
@@ -32,6 +31,7 @@ public class AIOServiceTest {
         authDAO = new MemoryAuthTokenDAO();
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
+
         loginService = new LoginService(userDAO, authDAO);
         registerService = new RegisterService(userDAO, authDAO);
         clearApplicationService = new ClearApplicationService(userDAO, authDAO, gameDAO);
@@ -111,7 +111,8 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("creategametestgood", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("creategametestgood", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest("game1"), authToken);
+        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest("game1", null, null), authToken);
+
         Assertions.assertEquals("success", result.message());
     }
 
@@ -123,7 +124,7 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("creategametestbad", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("creategametestbad", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest(null), authToken);
+        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest(null, null, null), authToken);
         Assertions.assertEquals("Error: bad request", result.message());
     }
 
@@ -157,8 +158,8 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("joingametestgood", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("joingametestgood", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game2"), authToken);
-        Integer gameID = create.gameID();
+        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game2", null, null), authToken);
+        Integer gameID = create.game().getGameID();
         JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("success", result.message());
     }
@@ -171,8 +172,8 @@ public class AIOServiceTest {
         registerService.register(new RegisterService.RegisterRequest("joingametestbad", "password", "email"));
         LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("joingametestbad", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game3"), authToken);
-        Integer gameID = create.gameID();
+        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game3", null, null), authToken);
+        Integer gameID = create.game().getGameID();
         joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
         JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("Error: already taken", result.message());
