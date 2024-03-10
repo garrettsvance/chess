@@ -4,7 +4,7 @@ import model.AuthData;
 
 import java.sql.SQLException;
 
-public class SQLAuthTokenDAO implements AuthTokenDAO { //TODO: extends vs implements
+public class SQLAuthTokenDAO implements AuthTokenDAO {
 
     public SQLAuthTokenDAO() throws DataAccessException {
         configureDataBase();
@@ -80,6 +80,10 @@ public class SQLAuthTokenDAO implements AuthTokenDAO { //TODO: extends vs implem
     };
 
     private void configureDataBase() throws DataAccessException {
+        build(buildString);
+    }
+
+    static void build(String[] buildString) throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : buildString) {

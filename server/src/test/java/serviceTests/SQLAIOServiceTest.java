@@ -1,6 +1,5 @@
 package serviceTests;
 import dataAccess.*;
-import dataAccess.MemoryAuthTokenDAO;
 import org.junit.jupiter.api.*;
 import service.ClearApplicationService;
 import service.CreateGameService;

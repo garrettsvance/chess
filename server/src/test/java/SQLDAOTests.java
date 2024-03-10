@@ -1,10 +1,8 @@
 import dataAccess.*;
-import dataAccess.MemoryAuthTokenDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoffTests.testClasses.TestModels;
 import service.ClearApplicationService;
 import service.CreateGameService;
 import service.JoinGameService;
@@ -13,11 +11,7 @@ import service.LoginService;
 import service.LogoutService;
 import service.RegisterService;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.UUID;
 
 public class SQLDAOTests {
 
