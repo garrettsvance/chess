@@ -6,11 +6,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class CreateGameHandler implements Route {
-
-    public final CreateGameService createGameService;
-
-    public CreateGameHandler(CreateGameService createGameService) {this.createGameService = createGameService;}
+public record CreateGameHandler(CreateGameService createGameService) implements Route {
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
@@ -26,7 +22,7 @@ public class CreateGameHandler implements Route {
                 case "Error: bad request" -> response.status(400);
             }
             return gson.toJson(result);
-        } catch(Exception e) {
+        } catch (Exception e) {
             CreateGameService.CreateGameResult result = new CreateGameService.CreateGameResult(null, "Error:" + e.getMessage(), null);
             response.status(500);
             return gson.toJson(result);

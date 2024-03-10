@@ -39,6 +39,8 @@ public class MemAIOServiceTest {
         listGameService = new ListGameService(authDAO, gameDAO);
         createGameService = new CreateGameService(authDAO, gameDAO);
         joinGameService = new JoinGameService(authDAO, gameDAO);
+
+        clearApplicationService.clear();
     }
 
     @Test

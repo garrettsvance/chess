@@ -34,31 +34,6 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(String.format("Unable to insert game: %s", ex.getMessage()));
         }
     }
-    //  var insertWhiteString = "INSERT INTO game (gameID, whiteUsername, gameName) VALUES(?, ?, ?)";
-//        var insertBlackString = "INSERT INTO game (gameID, blackUsername, gameName) VALUES(?, ?, ?)";
-//        var insertNullString = "INSERT INTO game (gameID, gameName) VALUES(?, ?)";
-
-    //            if (game.getWhiteUsername() != null) {
-//                try (var preparedStatement = conn.prepareStatement(insertWhiteString)) {
-//                    preparedStatement.setInt(1, gameID);
-//                    preparedStatement.setString(2, whiteUsername);
-//                    preparedStatement.setString(3, gameName);
-//                    preparedStatement.executeUpdate();
-//                }
-//            }  else if (game.getBlackUsername() != null) {
-//                try (var preparedStatement = conn.prepareStatement(insertBlackString)) {
-//                    preparedStatement.setInt(1, gameID);
-//                    preparedStatement.setString(2, blackUsername);
-//                    preparedStatement.setString(3, gameName);
-//                    preparedStatement.executeUpdate();
-//                }
-//            } else {
-//                try (var preparedStatement = conn.prepareStatement(insertNullString)) {
-//                    preparedStatement.setInt(1, gameID);
-//                    preparedStatement.setString(2, gameName);
-//                    preparedStatement.executeUpdate();
-//                }
-//            }
 
     public GameData findGame(int gameID) throws DataAccessException {
         var insertString = "SELECT * FROM game WHERE gameID=?";
@@ -101,13 +76,16 @@ public class SQLGameDAO implements GameDAO {
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
         var gameName = rs.getString("gameName");
-        //TODO: gamestate?
+        // gamestate?
         return new GameData(gameID, whiteUsername, blackUsername, gameName);
     }
 
 
     public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
 
+        if (userName == null || findGame(gameID) == null) {
+            throw new DataAccessException("Incorrect Game Information");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             if (color.equalsIgnoreCase("WHITE")) {
                 String insertString = "UPDATE game SET whiteUsername=? WHERE gameID=?";

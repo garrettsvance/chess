@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public class RegisterService {
 
-    private UserDAO userDAO;
-    private AuthTokenDAO authDAO;
+    private final UserDAO userDAO;
+    private final AuthTokenDAO authDAO;
 
     public RegisterService(UserDAO userDAO, AuthTokenDAO authDAO) {
         this.userDAO = userDAO;
@@ -18,8 +18,6 @@ public class RegisterService {
 
     public record RegisterRequest(String username, String password, String email) {}
     public record RegisterResult(String username, String authToken, String message) {}
-    //static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-    //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException, SQLException {
         if (request.email() == null || request.username() == null || request.password() == null) {
@@ -34,5 +32,7 @@ public class RegisterService {
             return new RegisterResult(request.username(), userToken, "success");
         }
     }
+
+
 
 }

@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public class CreateGameService {
 
-    private AuthTokenDAO authDAO;
-    private GameDAO gameDAO;
+    private final AuthTokenDAO authDAO;
+    private final GameDAO gameDAO;
 
     public CreateGameService(AuthTokenDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -16,8 +16,6 @@ public class CreateGameService {
 
     public record CreateGameRequest(String gameName, String whiteUsername, String blackUsername) {}
     public record CreateGameResult(GameData game, String message, Integer gameID) {}
-    //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
-    //static MemoryGameDAO gameMap = new MemoryGameDAO();
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         String gameName = request.gameName();

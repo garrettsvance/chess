@@ -6,8 +6,8 @@ import model.GameData;
 
 public class JoinGameService {
 
-    private AuthTokenDAO authDAO;
-    private GameDAO gameDAO;
+    private final AuthTokenDAO authDAO;
+    private final GameDAO gameDAO;
 
     public JoinGameService(AuthTokenDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -18,9 +18,6 @@ public class JoinGameService {
 
     public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
     public record JoinGameResult(String playerColor, Integer gameID, String message) {}
-
-    //static MemoryGameDAO gameMap = new MemoryGameDAO();
-    //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
     public JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
         AuthData userToken = authDAO.findToken(authToken);

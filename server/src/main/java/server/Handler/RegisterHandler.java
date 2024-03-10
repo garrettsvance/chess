@@ -6,11 +6,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class RegisterHandler implements Route {
+public record RegisterHandler(RegisterService registerService) implements Route {
 
-    public final RegisterService registerService;
-
-    public RegisterHandler(RegisterService registerService) {this.registerService = registerService;}
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
@@ -23,7 +20,7 @@ public class RegisterHandler implements Route {
                 case "Error: already taken" -> response.status(403);
             }
             return gson.toJson(result);
-        } catch(Exception e) {
+        } catch (Exception e) {
             var result = new RegisterService.RegisterResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);

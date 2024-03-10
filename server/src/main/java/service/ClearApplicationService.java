@@ -3,9 +3,9 @@ import dataAccess.*;
 
 public class ClearApplicationService {
 
-    private UserDAO userDAO;
-    private AuthTokenDAO authDAO;
-    private GameDAO gameDAO;
+    private final UserDAO userDAO;
+    private final AuthTokenDAO authDAO;
+    private final GameDAO gameDAO;
 
     public ClearApplicationService(UserDAO userDAO, AuthTokenDAO authDAO, GameDAO gameDAO) {
         this.userDAO = userDAO;

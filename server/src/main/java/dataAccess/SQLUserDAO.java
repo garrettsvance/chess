@@ -2,8 +2,6 @@ package dataAccess;
 
 import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
@@ -12,16 +10,10 @@ public class SQLUserDAO implements UserDAO {
         configureDataBase();
     }
 
-    public String encrypt(String password) {
+    private String encrypt(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
-
-    public boolean checkPassword(String oldPassword, String newPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(newPassword, oldPassword);
-    }
-
 
     public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         String userName = userInfo.getUserName();
@@ -48,10 +40,12 @@ public class SQLUserDAO implements UserDAO {
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
-                preparedStatement.setString(1, userInfo.getUserName());
+                preparedStatement.setString(1, userName);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {
-                        if (checkPassword(rs.getString("password"), password)) {
+                        String oldPassword = rs.getString("password");
+                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                        if (encoder.matches(password, oldPassword)) {
                             return userInfo;
                         }
                     }
@@ -92,7 +86,7 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    private final String[] buildString = { //TODO: figure out what primary key is, figure out proper statement
+    private final String[] buildString = {
             """
             CREATE TABLE IF NOT EXISTS user (
             username VARCHAR(255) NOT NULL,

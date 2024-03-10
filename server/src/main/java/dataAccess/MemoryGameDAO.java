@@ -21,7 +21,6 @@ public class MemoryGameDAO implements GameDAO {
         return gameMap.values();
     }
 
-
     public void claimSpot(String userName, String color, Integer gameID) throws DataAccessException {
         if (color.equalsIgnoreCase("white")) {
             GameData game = findGame(gameID);

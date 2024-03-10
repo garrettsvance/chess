@@ -6,13 +6,7 @@ import spark.Response;
 import spark.Route;
 import service.ListGameService;
 
-import java.util.List;
-
-public class ListGamesHandler implements Route {
-
-    public final ListGameService listGameService;
-
-    public ListGamesHandler(ListGameService listGameService) {this.listGameService = listGameService;}
+public record ListGamesHandler(ListGameService listGameService) implements Route {
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
@@ -20,7 +14,7 @@ public class ListGamesHandler implements Route {
         try {
             String authToken = sparkRequest.headers("Authorization");
             var result = listGameService.listGames(authToken);
-            switch(result.message()) {
+            switch (result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);
             }

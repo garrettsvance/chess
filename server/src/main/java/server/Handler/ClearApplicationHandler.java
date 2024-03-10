@@ -6,11 +6,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ClearApplicationHandler implements Route {
-
-    public final ClearApplicationService clearApplicationService;
-
-    public ClearApplicationHandler(ClearApplicationService clearApplicationService) {this.clearApplicationService = clearApplicationService;}
+public record ClearApplicationHandler(ClearApplicationService clearApplicationService) implements Route {
 
 
     @Override

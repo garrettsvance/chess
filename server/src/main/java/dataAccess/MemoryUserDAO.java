@@ -13,11 +13,6 @@ public class MemoryUserDAO implements UserDAO {
 
     static Set<UserData> userMap = new HashSet<>();
 
-
-    public boolean checkPassword(String oldPassword, String newPassword) {
-        return false;
-    }
-
     public void insertUser(UserData userInfo) throws DataAccessException, SQLException {
         userMap.add(userInfo);
     }

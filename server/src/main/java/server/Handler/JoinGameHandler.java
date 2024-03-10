@@ -6,11 +6,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class JoinGameHandler implements Route {
-
-    public final JoinGameService joinGameService;
-
-    public JoinGameHandler(JoinGameService joinGameService) {this.joinGameService = joinGameService;}
+public record JoinGameHandler(JoinGameService joinGameService) implements Route {
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws Exception {
@@ -26,7 +22,7 @@ public class JoinGameHandler implements Route {
                 case "Error: already taken" -> response.status(403);
             }
             return gson.toJson(result);
-        } catch(Exception e) {
+        } catch (Exception e) {
             JoinGameService.JoinGameResult result = new JoinGameService.JoinGameResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);

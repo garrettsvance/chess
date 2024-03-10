@@ -1,11 +1,10 @@
 package service;
 import dataAccess.AuthTokenDAO;
-import dataAccess.MemoryAuthTokenDAO;
 import dataAccess.DataAccessException;
 
 public class LogoutService {
 
-    private AuthTokenDAO authDAO;
+    private final AuthTokenDAO authDAO;
 
     public LogoutService(AuthTokenDAO authDAO) {
         this.authDAO = authDAO;
