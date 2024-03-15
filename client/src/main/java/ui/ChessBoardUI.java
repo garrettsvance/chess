@@ -21,18 +21,21 @@ public class ChessBoardUI {
     public void printBoard(String teamColor) {
         String horizOrient;
         String vertOrient;
+        boolean isWhite = false;
 
         if (teamColor.equalsIgnoreCase("White")) {
             horizOrient = "hgfedcba";
             vertOrient = "12345678";
+            isWhite = true;
         } else {
             horizOrient = "abcdefgh";
             vertOrient = "87654321";
+            isWhite = false;
         }
 
         printTiles();
         printCoords(horizOrient, vertOrient);
-        printPieces();
+        printPieces(isWhite);
     }
 
     public void printTiles() {
@@ -73,7 +76,19 @@ public class ChessBoardUI {
         out.println("   ");
     }
 
-    public void printPieces() {
+    public void printPieces(boolean isWhite) {
+        int startRow = isWhite ? 1 : 8;
+        int endRow = isWhite ? 9 : 0;
+        int rowIncrement = isWhite ? 1 : -1;
+
+        for (int i = startRow; i != endRow; i += rowIncrement) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+            }
+        }
+
+
 
     }
 
