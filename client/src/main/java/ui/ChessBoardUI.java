@@ -12,6 +12,7 @@ import static ui.EscapeSequences.*;
 public class ChessBoardUI {
 
     private PrintStream out;
+    private ChessBoard board;
 
     public ChessBoardUI() {
         ChessBoard board = new ChessBoard();
@@ -84,16 +85,42 @@ public class ChessBoardUI {
         for (int i = startRow; i != endRow; i += rowIncrement) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(position);
+                ChessPiece piece = getPiece(position);
+                if (piece != null) {
+                    String pieceChar = getPieceChar(piece);
+                    out.print(pieceChar + " ");
+                } else {
+                    out.print(EMPTY);
+                }
             }
+            out.println();
         }
-
-
-
     }
 
-    public ChessPiece getPieceUI(ChessPosition position, ChessBoard board) {
+    public ChessPiece getPiece(ChessPosition position) {
         return board.getPiece(position);
+    }
+
+    public String getPieceChar(ChessPiece piece) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            return switch (piece.getPieceType()) {
+                case KING -> WHITE_KING;
+                case QUEEN -> WHITE_QUEEN;
+                case BISHOP -> WHITE_BISHOP;
+                case KNIGHT -> WHITE_KNIGHT;
+                case ROOK -> WHITE_ROOK;
+                case PAWN -> WHITE_PAWN;
+            };
+        } else {
+            return switch (piece.getPieceType()) {
+                case KING -> BLACK_KING;
+                case QUEEN -> BLACK_QUEEN;
+                case BISHOP -> BLACK_BISHOP;
+                case KNIGHT -> BLACK_KNIGHT;
+                case ROOK -> BLACK_ROOK;
+                case PAWN -> BLACK_PAWN;
+            };
+        }
     }
 
     /*    private ChessPiece[][] copy() {
