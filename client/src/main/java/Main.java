@@ -1,4 +1,5 @@
 import chess.*;
+import ui.ChessBoardUI;
 
 
 // this is the class that you run to start your server and such
@@ -8,5 +9,8 @@ public class Main {
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
+        ChessGame game = new ChessGame();
+        ChessBoardUI startBoard = new ChessBoardUI();
+        startBoard.printBoard(game);
     }
 }

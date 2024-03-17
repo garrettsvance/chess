@@ -6,23 +6,27 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import static ui.EscapeSequences.*;
 
 public class ChessBoardUI {
 
-    private PrintStream out;
-    private ChessBoard board;
+    private final PrintStream out;
 
     public ChessBoardUI() {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
+        this.out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     }
 
-    public void printBoard(String teamColor) {
+
+    public void printBoard(ChessGame game) {
+        ChessBoard board = game.getBoard();
+        String teamColor = String.valueOf(game.getTeamTurn());
         String horizOrient;
         String vertOrient;
         boolean isWhite = false;
+
+
 
         if (teamColor.equalsIgnoreCase("White")) {
             horizOrient = "hgfedcba";
@@ -31,12 +35,11 @@ public class ChessBoardUI {
         } else {
             horizOrient = "abcdefgh";
             vertOrient = "87654321";
-            isWhite = false;
         }
 
         printTiles();
         printCoords(horizOrient, vertOrient);
-        printPieces(isWhite);
+        printPieces(isWhite, board);
     }
 
     public void printTiles() {
@@ -77,7 +80,7 @@ public class ChessBoardUI {
         out.println("   ");
     }
 
-    public void printPieces(boolean isWhite) {
+    public void printPieces(boolean isWhite, ChessBoard board) {
         int startRow = isWhite ? 1 : 8;
         int endRow = isWhite ? 9 : 0;
         int rowIncrement = isWhite ? 1 : -1;
@@ -85,7 +88,7 @@ public class ChessBoardUI {
         for (int i = startRow; i != endRow; i += rowIncrement) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = getPiece(position);
+                ChessPiece piece = getPiece(position, board);
                 if (piece != null) {
                     String pieceChar = getPieceChar(piece);
                     out.print(pieceChar + " ");
@@ -97,7 +100,7 @@ public class ChessBoardUI {
         }
     }
 
-    public ChessPiece getPiece(ChessPosition position) {
+    public ChessPiece getPiece(ChessPosition position, ChessBoard board) {
         return board.getPiece(position);
     }
 
@@ -122,53 +125,5 @@ public class ChessBoardUI {
             };
         }
     }
-
-    /*    private ChessPiece[][] copy() {
-        ChessPiece[][] copiedBoard = new ChessPiece[9][9];
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                if (board[i][j] != null) {
-                    copiedBoard[i][j] = board[i][j].copy();
-                }
-            }
-        }
-        return copiedBoard;
-    }
-       public ChessPiece getPiece(ChessPosition position) {
-        int row = position.getRow();
-        int col = position.getColumn();
-        if (board[row][col] == null) {
-            return null;
-        } else {
-            return board[row][col];
-        }
-    }
-
-        public String getPieceAbbr(int i, int j) {
-        if (board[i][j] != null) {
-            if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                return switch (board[i][j].getPieceType()) {
-                    case KING -> "K";
-                    case QUEEN -> "Q";
-                    case BISHOP -> "B";
-                    case KNIGHT -> "N";
-                    case ROOK -> "R";
-                    case PAWN -> "P";
-                };
-            } else {
-                return switch (board[i][j].getPieceType()) {
-                    case KING -> "k";
-                    case QUEEN -> "q";
-                    case BISHOP -> "b";
-                    case KNIGHT -> "n";
-                    case ROOK -> "r";
-                    case PAWN -> "p";
-                };
-            }
-        }
-        return null;
-    }
-
-    */
 
 }
