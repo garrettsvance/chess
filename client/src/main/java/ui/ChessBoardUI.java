@@ -42,7 +42,7 @@ public class ChessBoardUI {
                     out.print(SET_BG_COLOR_DARK_GREY);
                     if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
                         // Corner tiles
-                        out.print(padding + "\u2001\u2005\u200A" + padding);
+                        out.print(padding + "\u2001\u2005\u200A" + "\u200A"); // swap last val for padding on laptop
                     } else if (i == 0 || i == 9) {
                         // Horizontal coordinate tiles
 
