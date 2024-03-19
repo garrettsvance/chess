@@ -36,9 +36,7 @@ public class ChessBoardUI {
             vertOrient = "87654321";
         }
 
-        // Define the padding characters
-        String padding = "\u2001"; // Narrow space
-        String emptyTilePadding = padding + padding + padding;
+        String padding = "\u2005";
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -46,10 +44,10 @@ public class ChessBoardUI {
                     out.print(SET_BG_COLOR_DARK_GREY);
                     if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
                         // Corner tiles
-                        out.print(emptyTilePadding);
+                        out.print(padding + "\u2001\u2005\u200A" + padding);
                     } else if (i == 0 || i == 9) {
                         // Horizontal coordinate tiles
-                        out.print(padding + horizOrient.charAt(j - 1) + padding);
+                        out.print("\u200A" + horizOrient.charAt(j - 1) + "\u200A" + "\u2001");
                     } else {
                         // Vertical coordinate tiles
                         out.print(padding + vertOrient.charAt(8 - i) + padding);
@@ -68,7 +66,7 @@ public class ChessBoardUI {
                         out.print(padding + pieceChar + padding);
                     } else {
                         // Empty tile
-                        out.print(emptyTilePadding);
+                        out.print(padding + "\u2001\u2005\u200A" + padding);
                     }
                 }
             }
