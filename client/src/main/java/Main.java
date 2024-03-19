@@ -10,7 +10,14 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         ChessGame game = new ChessGame();
+
+        ChessBoard board = game.getBoard();
+        board.resetBoard();
+        game.setBoard(board);
+
         ChessBoardUI startBoard = new ChessBoardUI();
+        startBoard.printBoard(game);
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
         startBoard.printBoard(game);
     }
 }

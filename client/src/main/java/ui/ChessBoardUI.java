@@ -21,10 +21,10 @@ public class ChessBoardUI {
 
     public void printBoard(ChessGame game) {
         ChessBoard board = game.getBoard();
-        board.resetBoard();
         String teamColor = String.valueOf(game.getTeamTurn());
         String horizOrient;
         String vertOrient;
+        String padding = "\u2005";
         boolean isWhite = false;
 
         if (teamColor.equalsIgnoreCase("White")) {
@@ -35,8 +35,6 @@ public class ChessBoardUI {
             horizOrient = "abcdefgh";
             vertOrient = "87654321";
         }
-
-        String padding = "\u2005";
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -62,7 +60,6 @@ public class ChessBoardUI {
                     ChessPiece piece = getPiece(position, board);
                     if (piece != null) {
                         String pieceChar = getPieceChar(piece);
-                        // Adjusting the spacing for tiles with pieces to match empty tiles and horizOrient spacing
                         out.print(padding + pieceChar + padding);
                     } else {
                         // Empty tile
@@ -74,66 +71,6 @@ public class ChessBoardUI {
         }
     }
 
-    public void printTiles() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) {
-                    out.print(SET_BG_COLOR_LIGHT_GREY);
-                } else {
-                    out.print(SET_BG_COLOR_BLACK);
-                }
-                out.print("   "); // Three spaces for each tile
-            }
-            out.println();
-        }
-    }
-
-    public void printCoords(String horizontal, String vertical) {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (i == 0 || i == 9 || j == 0 || j == 9) {
-                    out.print(SET_BG_COLOR_DARK_GREY);
-                    if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
-                        out.print("   ");
-                    } else if (i == 0 || i == 9) {
-                        out.print(" " + horizontal.charAt(j - 1) + " ");
-                    } else {
-                        out.print(" " + vertical.charAt(8 - i) + " ");
-                    }
-                } else {
-                    if ((i + j) % 2 == 0) {
-                        out.print(SET_BG_COLOR_LIGHT_GREY);
-                    } else {
-                        out.print(SET_BG_COLOR_BLACK);
-                    }
-                    out.print("   ");
-                }
-            }
-            out.println();
-        }
-    }
-
-    public void printPieces(boolean isWhite, ChessBoard board) {
-        int startRow = isWhite ? 1 : 8;
-        int endRow = isWhite ? 9 : 0;
-        int rowIncrement = isWhite ? 1 : -1;
-
-        for (int i = startRow; i != endRow; i += rowIncrement) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = getPiece(position, board);
-                if (piece != null) {
-                    //System.out.println(piece.getPieceType());
-                    String pieceChar = getPieceChar(piece);
-                    out.print(pieceChar);
-                } else {
-                    //System.out.println("Null piece");
-                    out.print(EMPTY);
-                }
-            }
-            out.println();
-        }
-    }
 
     public ChessPiece getPiece(ChessPosition position, ChessBoard board) {
         return board.getPiece(position);
