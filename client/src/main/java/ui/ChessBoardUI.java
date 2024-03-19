@@ -45,7 +45,13 @@ public class ChessBoardUI {
                         out.print(padding + "\u2001\u2005\u200A" + padding);
                     } else if (i == 0 || i == 9) {
                         // Horizontal coordinate tiles
-                        out.print("\u200A" + horizOrient.charAt(j - 1) + "\u200A" + "\u2001");
+
+                        // Desktop Padding
+                        out.print("\u200A" + horizOrient.charAt(j - 1) + "\u2005" + "\u200A" + "\u200A" + "\u200A");
+
+                        // Laptop Padding
+                        //ut.print("\u200A" + horizOrient.charAt(j - 1) + "\u200A" + "\u2001");
+
                     } else {
                         // Vertical coordinate tiles
                         out.print(padding + vertOrient.charAt(8 - i) + padding);
