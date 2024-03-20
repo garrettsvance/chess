@@ -6,6 +6,8 @@ import model.GameData;
 import model.UserData;
 import service.CreateGameService;
 import service.JoinGameService;
+import service.LoginService;
+import service.RegisterService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +26,14 @@ public class ServerFacade {
     }
 
 
-    public AuthData login(UserData user) throws DataAccessException {
-        return this.makeRequest("POST", "/session", user, AuthData.class, null);
+    public AuthData login(UserData user) throws DataAccessException { // TODO: should this be a handler type?
+        var request = new LoginService.LoginRequest(user.getUserName(), user.getPassword(), user.getEmail());
+        return this.makeRequest("POST", "/session", request, AuthData.class, null);
     }
 
     public AuthData register(UserData user) throws DataAccessException {
-        return this.makeRequest("POST", "/user", user, AuthData.class, null);
+        var request = new RegisterService.RegisterRequest(user.getUserName(), user.getPassword(), user.getEmail());
+        return this.makeRequest("POST", "/user", request, AuthData.class, null);
     }
 
     public void clearDatabase() throws DataAccessException {
@@ -37,6 +41,7 @@ public class ServerFacade {
     }
 
     public void logout(AuthData authToken) throws DataAccessException {
+
         this.makeRequest("DELETE", "/session", null, null, authToken);
     }
 
