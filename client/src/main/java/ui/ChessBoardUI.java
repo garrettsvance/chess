@@ -22,19 +22,25 @@ public class ChessBoardUI {
     public void printBoard(ChessGame game) {
         ChessBoard board = game.getBoard();
         String teamColor = String.valueOf(game.getTeamTurn());
-        String horizOrient;
-        String vertOrient;
-        String padding = "\u2005";
-        boolean isWhite = false;
+
+        String whiteHorizontal = "hgfedcba";
+        String whiteVertical = "12345678";
+        String blackHorizontal = "abcdefgh";
+        String blackVertical = "87654321";
 
         if (teamColor.equalsIgnoreCase("White")) {
-            horizOrient = "hgfedcba";
-            vertOrient = "12345678";
-            isWhite = true;
+            printBoardHelper(whiteHorizontal, whiteVertical, true, board);
+            System.out.println();
+            printBoardHelper(blackHorizontal, blackVertical, false, board);
         } else {
-            horizOrient = "abcdefgh";
-            vertOrient = "87654321";
+            printBoardHelper(blackHorizontal, blackVertical, false, board);
+            System.out.println();
+            printBoardHelper(whiteHorizontal, whiteVertical, true, board);
         }
+    }
+
+    public void printBoardHelper(String horizontal, String vertical, boolean isWhite, ChessBoard board) {
+        String padding = "\u2005";
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -42,19 +48,19 @@ public class ChessBoardUI {
                     out.print(SET_BG_COLOR_DARK_GREY);
                     if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
                         // Corner tiles
-                        out.print(padding + "\u2001\u2005\u200A" + "\u200A"); // swap last val for padding on laptop
+                        out.print(padding + "\u2001\u2005\u200A" + "\u200A"); // swap last val for "padding" on laptop
                     } else if (i == 0 || i == 9) {
                         // Horizontal coordinate tiles
 
                         // Desktop Padding
-                        out.print("\u200A" + horizOrient.charAt(j - 1) + "\u2005" + "\u200A" + "\u200A" + "\u200A");
+                        out.print("\u200A" + horizontal.charAt(j - 1) + "\u2005" + "\u200A" + "\u200A" + "\u200A");
 
-                        // Laptop Padding
+                        // Laptop Padding:
                         //ut.print("\u200A" + horizOrient.charAt(j - 1) + "\u200A" + "\u2001");
 
                     } else {
                         // Vertical coordinate tiles
-                        out.print(padding + vertOrient.charAt(8 - i) + padding);
+                        out.print(padding + vertical.charAt(8 - i) + padding);
                     }
                 } else {
                     if ((i + j) % 2 == 0) {

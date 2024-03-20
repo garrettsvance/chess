@@ -1,11 +1,12 @@
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import service.CreateGameService;
 import service.JoinGameService;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +14,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.zip.DataFormatException;
 
 public class ServerFacade {
     //each of these 7 methods should be one to two lines of code, and should call the actual coded methods in client communication
@@ -46,14 +46,15 @@ public class ServerFacade {
         return response.games();
     }
 
-    public GameData createGame(AuthData authToken, GameData game) throws DataAccessException {
-        return this.makeRequest("POST", "/game", game, GameData.class, authToken);
+    public void createGame(AuthData authToken, String gameName) throws DataAccessException {
+        var request = new CreateGameService.CreateGameRequest(gameName, null, null);
+        this.makeRequest("POST", "/game", request, GameData.class, authToken);
     }
 
-    public void joinGame(AuthData authToken, String playerColor, Integer gameID) throws DataAccessException {
+    public ChessGame joinGame(AuthData authToken, String playerColor, Integer gameID) throws DataAccessException {
         String auth = authToken.getAuthToken();
         var request = new JoinGameService.JoinGameRequest(playerColor, gameID, auth);
-        makeRequest("PUT", "/game", request, GameData.class, authToken);
+        return makeRequest("PUT", "/game", request, ChessGame.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws DataAccessException {

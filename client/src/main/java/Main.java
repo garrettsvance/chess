@@ -1,5 +1,6 @@
 import chess.*;
 import ui.ChessBoardUI;
+import server.Server;
 
 
 // this is the class that you run to start your server and such
