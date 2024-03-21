@@ -63,7 +63,7 @@ public class ClientCommunication {
 
     public void quit(PrintStream out) {
         out.println("Quit");
-        logout(out);
+        authData = null;
     }
 
     public void login(PrintStream out) {
@@ -138,7 +138,8 @@ public class ClientCommunication {
     public void listGames(PrintStream out) {
         out.println("List Games");
         try {
-            server.listGames(authData);
+            var response = server.listGames(authData);
+            out.println(response);
         } catch (DataAccessException e) {
             out.println("List Games Failed: " + e.getMessage());
         }
