@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class ClientCommunication {
-
+// for phase 6, this becomes "http communication/communicator"
     private final ServerFacade server;
     private AuthData authData;
     MenuUI menuUI = new MenuUI();
