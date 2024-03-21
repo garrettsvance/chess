@@ -1,15 +1,10 @@
-import SharedServices.JoinGameRequest;
+import SharedServices.*;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import service.CreateGameService;
-import service.JoinGameService;
-import service.LoginService;
-import service.RegisterService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,12 +23,12 @@ public class ServerFacade {
 
 
     public AuthData login(UserData user) throws DataAccessException { // TODO: should this be a handler type?
-        var request = new LoginService.LoginRequest(user.getUserName(), user.getPassword(), user.getEmail());
+        var request = new LoginRequest(user.getUserName(), user.getPassword(), user.getEmail());
         return this.makeRequest("POST", "/session", request, AuthData.class, null);
     }
 
     public AuthData register(UserData user) throws DataAccessException {
-        var request = new RegisterService.RegisterRequest(user.getUserName(), user.getPassword(), user.getEmail());
+        var request = new RegisterRequest(user.getUserName(), user.getPassword(), user.getEmail());
         return this.makeRequest("POST", "/user", request, AuthData.class, null);
     }
 
@@ -53,7 +48,7 @@ public class ServerFacade {
     }
 
     public void createGame(AuthData authToken, String gameName) throws DataAccessException {
-        var request = new CreateGameService.CreateGameRequest(gameName, null, null);
+        var request = new CreateGameRequest(gameName, null, null);
         this.makeRequest("POST", "/game", request, GameData.class, authToken);
     }
 
