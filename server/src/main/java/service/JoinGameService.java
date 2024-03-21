@@ -1,7 +1,10 @@
 package service;
+import SharedServices.JoinGameRequest;
+import SharedServices.JoinGameResult;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
+
 
 
 public class JoinGameService {
@@ -14,10 +17,6 @@ public class JoinGameService {
         this.gameDAO = gameDAO;
     }
 
-
-
-    public record JoinGameRequest(String playerColor, Integer gameID, String authToken) {}
-    public record JoinGameResult(String playerColor, Integer gameID, String message) {}
 
     public JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
         AuthData userToken = authDAO.findToken(authToken);

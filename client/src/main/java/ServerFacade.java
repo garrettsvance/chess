@@ -1,3 +1,4 @@
+import SharedServices.JoinGameRequest;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
@@ -58,7 +59,7 @@ public class ServerFacade {
 
     public ChessGame joinGame(AuthData authToken, String playerColor, Integer gameID) throws DataAccessException {
         String auth = authToken.getAuthToken();
-        var request = new JoinGameService.JoinGameRequest(playerColor, gameID, auth);
+        var request = new JoinGameRequest(playerColor, gameID, auth);
         return makeRequest("PUT", "/game", request, ChessGame.class, authToken);
     }
 
