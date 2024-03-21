@@ -1,4 +1,5 @@
 package service;
+import SharedServices.ListGamesResult;
 import dataAccess.*;
 import model.GameData;
 
@@ -15,7 +16,6 @@ public class ListGameService {
         this.gameDAO = gameDAO;
     }
 
-    public record ListGamesResult(Collection<GameData> games, String message) {}
 
     public ListGamesResult listGames(String authToken) throws SQLException, DataAccessException {
 

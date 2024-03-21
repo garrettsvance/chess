@@ -1,4 +1,5 @@
 package service;
+import SharedServices.LogoutResult;
 import dataAccess.AuthTokenDAO;
 import dataAccess.DataAccessException;
 
@@ -10,8 +11,6 @@ public class LogoutService {
         this.authDAO = authDAO;
     }
 
-    public record LogoutResult(String message) {}
-    //static MemoryAuthTokenDAO authDAO = new MemoryAuthTokenDAO();
 
     public LogoutResult logout(String authToken) throws DataAccessException {
 

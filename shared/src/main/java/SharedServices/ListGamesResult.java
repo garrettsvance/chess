@@ -1,2 +1,7 @@
-package SharedServices;public class ListGameResult {
-}
+package SharedServices;
+
+import model.GameData;
+
+import java.util.Collection;
+
+public record ListGamesResult(Collection<GameData> games, String message) {}

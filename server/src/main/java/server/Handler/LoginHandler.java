@@ -1,5 +1,7 @@
 package server.Handler;
 
+import SharedServices.LoginRequest;
+import SharedServices.LoginResult;
 import service.LoginService;
 import com.google.gson.Gson;
 import spark.Request;
@@ -13,7 +15,7 @@ public record LoginHandler(LoginService loginService) implements Route {
         Gson gson = new Gson();
 
         try {
-            var request = gson.fromJson(sparkRequest.body(), LoginService.LoginRequest.class);
+            var request = gson.fromJson(sparkRequest.body(), LoginRequest.class);
             var result = loginService.login(request);
             switch (result.message()) {
                 case "success" -> response.status(200);
@@ -21,7 +23,7 @@ public record LoginHandler(LoginService loginService) implements Route {
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            LoginService.LoginResult result = new LoginService.LoginResult(null, null, "Error:" + e.getMessage());
+            LoginResult result = new LoginResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

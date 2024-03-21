@@ -1,5 +1,7 @@
 package server.Handler;
 
+import SharedServices.CreateGameRequest;
+import SharedServices.CreateGameResult;
 import service.CreateGameService;
 import com.google.gson.Gson;
 import spark.Request;
@@ -13,9 +15,9 @@ public record CreateGameHandler(CreateGameService createGameService) implements 
         Gson gson = new Gson();
 
         try {
-            CreateGameService.CreateGameRequest request = gson.fromJson(sparkRequest.body(), CreateGameService.CreateGameRequest.class);
+            CreateGameRequest request = gson.fromJson(sparkRequest.body(), CreateGameRequest.class);
             String authToken = sparkRequest.headers("Authorization");
-            CreateGameService.CreateGameResult result = createGameService.createGame(request, authToken);
+            CreateGameResult result = createGameService.createGame(request, authToken);
             switch (result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);
@@ -23,7 +25,7 @@ public record CreateGameHandler(CreateGameService createGameService) implements 
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            CreateGameService.CreateGameResult result = new CreateGameService.CreateGameResult(null, "Error:" + e.getMessage(), null);
+            CreateGameResult result = new CreateGameResult(null, "Error:" + e.getMessage(), null);
             response.status(500);
             return gson.toJson(result);
         }

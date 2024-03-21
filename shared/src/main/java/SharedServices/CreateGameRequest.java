@@ -1,2 +1,3 @@
-package SharedServices;public class CreateGameRequest {
-}
+package SharedServices;
+
+public record CreateGameRequest(String gameName, String whiteUsername, String blackUsername) {}

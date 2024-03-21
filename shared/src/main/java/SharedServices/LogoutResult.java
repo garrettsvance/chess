@@ -1,2 +1,3 @@
-package SharedServices;public class LogoutResult {
-}
+package SharedServices;
+
+public record LogoutResult(String message) {}

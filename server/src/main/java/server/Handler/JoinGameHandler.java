@@ -1,5 +1,7 @@
 package server.Handler;
 
+import SharedServices.JoinGameRequest;
+import SharedServices.JoinGameResult;
 import service.JoinGameService;
 import com.google.gson.Gson;
 import spark.Request;
@@ -12,9 +14,9 @@ public record JoinGameHandler(JoinGameService joinGameService) implements Route 
     public Object handle(Request sparkRequest, Response response) throws Exception {
         Gson gson = new Gson();
         try {
-            JoinGameService.JoinGameRequest request = gson.fromJson(sparkRequest.body(), JoinGameService.JoinGameRequest.class);
+            JoinGameRequest request = gson.fromJson(sparkRequest.body(), JoinGameRequest.class);
             String authToken = sparkRequest.headers("Authorization");
-            JoinGameService.JoinGameResult result = joinGameService.joinGame(request, authToken);
+            JoinGameResult result = joinGameService.joinGame(request, authToken);
             switch (result.message()) {
                 case "success" -> response.status(200);
                 case "Error: unauthorized" -> response.status(401);
@@ -23,7 +25,7 @@ public record JoinGameHandler(JoinGameService joinGameService) implements Route 
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            JoinGameService.JoinGameResult result = new JoinGameService.JoinGameResult(null, null, "Error:" + e.getMessage());
+            JoinGameResult result = new JoinGameResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

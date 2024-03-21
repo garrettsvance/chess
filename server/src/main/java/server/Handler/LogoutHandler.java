@@ -5,6 +5,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import service.LogoutService;
+import SharedServices.LogoutResult;
 
 public record LogoutHandler(LogoutService logoutService) implements Route {
 
@@ -20,7 +21,7 @@ public record LogoutHandler(LogoutService logoutService) implements Route {
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            LogoutService.LogoutResult result = new LogoutService.LogoutResult("Error:" + e.getMessage());
+            LogoutResult result = new LogoutResult("Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

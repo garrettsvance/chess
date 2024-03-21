@@ -1,5 +1,6 @@
 package server.Handler;
 
+import SharedServices.ListGamesResult;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
@@ -20,7 +21,7 @@ public record ListGamesHandler(ListGameService listGameService) implements Route
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            var result = new ListGameService.ListGamesResult(null, "Error: " + e.getMessage());
+            var result = new ListGamesResult(null, "Error: " + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

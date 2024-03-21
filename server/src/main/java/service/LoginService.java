@@ -1,4 +1,6 @@
 package service;
+import SharedServices.LoginRequest;
+import SharedServices.LoginResult;
 import dataAccess.*;
 import model.AuthData;
 import model.UserData;
@@ -17,9 +19,6 @@ public class LoginService {
         this.authDAO = authDAO;
     }
 
-    public record LoginRequest(String username, String password, String email) {}
-
-    public record LoginResult(String username, String authToken, String message) {}
 
     public LoginResult login(LoginRequest request) throws DataAccessException {
         String userName = request.username();

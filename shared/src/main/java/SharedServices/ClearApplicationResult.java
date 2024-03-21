@@ -1,2 +1,3 @@
-package SharedServices;public class ClearApplicationResult {
-}
+package SharedServices;
+
+public record ClearApplicationResult(String message) {}

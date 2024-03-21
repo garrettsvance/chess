@@ -1,5 +1,6 @@
 package server.Handler;
-import service.LoginService;
+
+import SharedServices.LoginResult;
 import service.ClearApplicationService;
 import com.google.gson.Gson;
 import spark.Request;
@@ -19,7 +20,7 @@ public record ClearApplicationHandler(ClearApplicationService clearApplicationSe
             }
             return gson.toJson(result);
         } catch (Exception e) {
-            LoginService.LoginResult result = new LoginService.LoginResult(null, null, "Error:" + e.getMessage());
+            LoginResult result = new LoginResult(null, null, "Error:" + e.getMessage());
             response.status(500);
             return gson.toJson(result);
         }

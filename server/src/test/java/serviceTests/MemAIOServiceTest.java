@@ -1,4 +1,5 @@
 package serviceTests;
+import SharedServices.*;
 import dataAccess.*;
 import dataAccess.MemoryAuthTokenDAO;
 import org.junit.jupiter.api.*;
@@ -47,7 +48,7 @@ public class MemAIOServiceTest {
     @Order(1)
     @DisplayName("Clear Application Test 1")
     public void clearTest1() {
-        ClearApplicationService.ClearApplicationResult result = clearApplicationService.clear();
+        ClearApplicationResult result = clearApplicationService.clear();
         Assertions.assertEquals("success", result.message());
     }
 
@@ -55,7 +56,7 @@ public class MemAIOServiceTest {
     @Order(2)
     @DisplayName("Register User Test - Positive")
     public void registerGood() throws SQLException, DataAccessException {
-        RegisterService.RegisterResult result = registerService.register(new RegisterService.RegisterRequest("garrett13", "password", "email"));
+        RegisterResult result = registerService.register(new RegisterRequest("garrett13", "password", "email"));
         Assertions.assertEquals("success", result.message());
     }
 
@@ -63,9 +64,9 @@ public class MemAIOServiceTest {
     @Order(3)
     @DisplayName("Register User Test - Negative")
     public void registerBad() throws SQLException, DataAccessException {
-        registerService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
-        RegisterService.RegisterResult result = registerService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
-        registerService.register(new RegisterService.RegisterRequest("garrett", "password", "email"));
+        registerService.register(new RegisterRequest("garrett", "password", "email"));
+        RegisterResult result = registerService.register(new RegisterRequest("garrett", "password", "email"));
+        registerService.register(new RegisterRequest("garrett", "password", "email"));
         Assertions.assertEquals("Error: already taken", result.message());
     }
 
@@ -73,8 +74,8 @@ public class MemAIOServiceTest {
     @Order(4)
     @DisplayName("Log In User Test - Positive")
     public void logInGood() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("garrett11", "password", "email"));
-        LoginService.LoginResult result = loginService.login(new LoginService.LoginRequest("garrett11", "password", "email"));
+        registerService.register(new RegisterRequest("garrett11", "password", "email"));
+        LoginResult result = loginService.login(new LoginRequest("garrett11", "password", "email"));
         Assertions.assertEquals("success", result.message());
     }
 
@@ -82,7 +83,7 @@ public class MemAIOServiceTest {
     @Order(5)
     @DisplayName("Log In User Test - Negative")
     public void logInBad() throws DataAccessException {
-        LoginService.LoginResult result = loginService.login(new LoginService.LoginRequest("garrett", "wrongpassword", "email"));
+        LoginResult result = loginService.login(new LoginRequest("garrett", "wrongpassword", "email"));
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
@@ -90,10 +91,10 @@ public class MemAIOServiceTest {
     @Order(6)
     @DisplayName("Log out User Test - Positive")
     public void logOutGood() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("logouttest", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("logouttest", "password", "email"));
+        registerService.register(new RegisterRequest("logouttest", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("logouttest", "password", "email"));
         String authToken = login.authToken();
-        LogoutService.LogoutResult result = logoutService.logout(authToken);
+        LogoutResult result = logoutService.logout(authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -102,7 +103,7 @@ public class MemAIOServiceTest {
     @DisplayName("Log Out User Test - Negative")
     public void logOutBad() throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        LogoutService.LogoutResult result = logoutService.logout(authToken);
+        LogoutResult result = logoutService.logout(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
@@ -110,10 +111,10 @@ public class MemAIOServiceTest {
     @Order(8)
     @DisplayName("Create Game service Test - Positive")
     public void createGood() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("creategametestgood", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("creategametestgood", "password", "email"));
+        registerService.register(new RegisterRequest("creategametestgood", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("creategametestgood", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest("game1", null, null), authToken);
+        CreateGameResult result = createGameService.createGame(new CreateGameRequest("game1", null, null), authToken);
 
         Assertions.assertEquals("success", result.message());
     }
@@ -123,10 +124,10 @@ public class MemAIOServiceTest {
     @Order(9)
     @DisplayName("Create Game Test - Negative")
     public void createBad() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("creategametestbad", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("creategametestbad", "password", "email"));
+        registerService.register(new RegisterRequest("creategametestbad", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("creategametestbad", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult result = createGameService.createGame(new CreateGameService.CreateGameRequest(null, null, null), authToken);
+        CreateGameResult result = createGameService.createGame(new CreateGameRequest(null, null, null), authToken);
         Assertions.assertEquals("Error: bad request", result.message());
     }
 
@@ -135,10 +136,10 @@ public class MemAIOServiceTest {
     @Order(10)
     @DisplayName("List All Games Test - Positive")
     public void listAllGood() throws SQLException, DataAccessException {
-        registerService.register(new RegisterService.RegisterRequest("listgamestestgood", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("listgamestestgood", "password", "email"));
+        registerService.register(new RegisterRequest("listgamestestgood", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("listgamestestgood", "password", "email"));
         String authToken = login.authToken();
-        ListGameService.ListGamesResult result = listGameService.listGames(authToken);
+        ListGamesResult result = listGameService.listGames(authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -148,7 +149,7 @@ public class MemAIOServiceTest {
     @DisplayName("List All Games Test - Negative")
     public void listAllBad() throws SQLException, DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        ListGameService.ListGamesResult result = listGameService.listGames(authToken);
+        ListGamesResult result = listGameService.listGames(authToken);
         Assertions.assertEquals("Error: unauthorized", result.message());
     }
 
@@ -157,12 +158,12 @@ public class MemAIOServiceTest {
     @Order(12)
     @DisplayName("Join Game Test - Positive")
     public void joinGameGood() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("joingametestgood", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("joingametestgood", "password", "email"));
+        registerService.register(new RegisterRequest("joingametestgood", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("joingametestgood", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game2", null, null), authToken);
+        CreateGameResult create = createGameService.createGame(new CreateGameRequest("game2", null, null), authToken);
         Integer gameID = create.game().getGameID();
-        JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        JoinGameResult result = joinGameService.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("success", result.message());
     }
 
@@ -171,13 +172,13 @@ public class MemAIOServiceTest {
     @Order(13)
     @DisplayName("Join Game Test - Negative")
     public void joinGameBad() throws DataAccessException, SQLException {
-        registerService.register(new RegisterService.RegisterRequest("joingametestbad", "password", "email"));
-        LoginService.LoginResult login = loginService.login(new LoginService.LoginRequest("joingametestbad", "password", "email"));
+        registerService.register(new RegisterRequest("joingametestbad", "password", "email"));
+        LoginResult login = loginService.login(new LoginRequest("joingametestbad", "password", "email"));
         String authToken = login.authToken();
-        CreateGameService.CreateGameResult create = createGameService.createGame(new CreateGameService.CreateGameRequest("game3", null, null), authToken);
+        CreateGameResult create = createGameService.createGame(new CreateGameRequest("game3", null, null), authToken);
         Integer gameID = create.game().getGameID();
-        joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
-        JoinGameService.JoinGameResult result = joinGameService.joinGame(new JoinGameService.JoinGameRequest("White", gameID, authToken), authToken);
+        joinGameService.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
+        JoinGameResult result = joinGameService.joinGame(new JoinGameRequest("White", gameID, authToken), authToken);
         Assertions.assertEquals("Error: already taken", result.message());
     }
 
@@ -186,7 +187,7 @@ public class MemAIOServiceTest {
     @Order(14)
     @DisplayName("Clear Application Test 2")
     public void clearTest2() {
-        ClearApplicationService.ClearApplicationResult result = clearApplicationService.clear();
+        ClearApplicationResult result = clearApplicationService.clear();
         Assertions.assertEquals("success", result.message());
     }
 

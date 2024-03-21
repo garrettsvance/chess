@@ -1,4 +1,5 @@
 package service;
+import SharedServices.ClearApplicationResult;
 import dataAccess.*;
 
 public class ClearApplicationService {
@@ -13,7 +14,6 @@ public class ClearApplicationService {
         this.gameDAO = gameDAO;
     }
 
-    public record ClearApplicationResult(String message) {}
 
     public ClearApplicationResult clear() {
         try {

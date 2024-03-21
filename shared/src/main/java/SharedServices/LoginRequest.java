@@ -1,2 +1,3 @@
-package SharedServices;public class LoginRequest {
-}
+package SharedServices;
+
+public record LoginRequest(String username, String password, String email) {}

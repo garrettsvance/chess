@@ -1,2 +1,3 @@
-package SharedServices;public class LoginResult {
-}
+package SharedServices;
+
+public record LoginResult(String username, String authToken, String message) {}

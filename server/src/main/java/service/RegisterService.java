@@ -1,4 +1,6 @@
 package service;
+import SharedServices.RegisterRequest;
+import SharedServices.RegisterResult;
 import model.AuthData;
 import model.UserData;
 import dataAccess.*;
@@ -16,8 +18,6 @@ public class RegisterService {
         this.authDAO = authDAO;
     }
 
-    public record RegisterRequest(String username, String password, String email) {}
-    public record RegisterResult(String username, String authToken, String message) {}
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException, SQLException {
         if (request.email() == null || request.username() == null || request.password() == null) {

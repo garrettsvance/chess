@@ -1,4 +1,6 @@
 package service;
+import SharedServices.CreateGameRequest;
+import SharedServices.CreateGameResult;
 import dataAccess.*;
 import model.GameData;
 
@@ -14,8 +16,7 @@ public class CreateGameService {
         this.gameDAO = gameDAO;
     }
 
-    public record CreateGameRequest(String gameName, String whiteUsername, String blackUsername) {}
-    public record CreateGameResult(GameData game, String message, Integer gameID) {}
+
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         String gameName = request.gameName();

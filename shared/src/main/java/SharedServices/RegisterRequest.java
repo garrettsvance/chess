@@ -1,2 +1,3 @@
-package SharedServices;public class RegisterRequest {
-}
+package SharedServices;
+
+public record RegisterRequest(String username, String password, String email) {}
