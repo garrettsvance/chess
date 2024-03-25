@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerFacade {
     //each of these 7 methods should be one to two lines of code, and should call the actual coded methods in client communication
@@ -41,8 +43,8 @@ public class ServerFacade {
         this.makeRequest("DELETE", "/session", null, null, authToken);
     }
 
-    public GameData listGames(AuthData authToken) throws DataAccessException {
-        record ListGamesResponse(GameData games) {}
+    public ArrayList<GameData> listGames(AuthData authToken) throws DataAccessException {
+        record ListGamesResponse(ArrayList<GameData> games) {}
         ListGamesResponse response = this.makeRequest("GET", "/game", null, ListGamesResponse.class, authToken);
         return response.games();
     }
@@ -95,8 +97,9 @@ public class ServerFacade {
         if (http.getContentLength() < 0 ) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader((respBody));
+                String readerString = new String(respBody.readAllBytes()); // changes here
                 if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
+                    response = new Gson().fromJson(readerString, responseClass);
                 }
             }
         }

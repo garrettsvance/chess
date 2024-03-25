@@ -141,7 +141,9 @@ public class ClientCommunication {
         out.println("List Games");
         try {
             var response = server.listGames(authData);
-            out.println(response);
+            for (GameData game : response) {
+                out.println("Game Name: " + game.getGameName() + ", Game ID: " + game.getGameID());
+            }
         } catch (DataAccessException e) {
             out.println("List Games Failed: " + e.getMessage());
         }
