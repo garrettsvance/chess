@@ -10,6 +10,7 @@ import ui.MenuUI;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class ClientCommunication {
@@ -79,10 +80,14 @@ public class ClientCommunication {
             String authTokenString = response.getAuthToken();
             authData = new AuthData(authTokenString, username);
             do {
+                out.println("Success!");
                 menuUI.postLogin(out);
                 menuNum = scanner.nextInt();
                 postLoginChoice(menuNum, out);
             } while (menuNum != 2);
+            out.println();
+            out.println();
+            run();
         } catch (DataAccessException e) {
             out.println("Login Failed: " + e.getMessage());
         }
@@ -97,10 +102,16 @@ public class ClientCommunication {
         out.print("New Email: ");
         String email = scanner.nextLine();
 
+        if (Objects.equals(username, "") || Objects.equals(password, "") || Objects.equals(email, "")) {
+            out.println("All parameters must be fulfilled to register user.");
+            out.println();
+            out.println();
+            run();
+        }
         UserData user = new UserData(username, password, email);
 
         try {
-            AuthData response = server.register(user); //TODO: make sure to interpret response properly
+            AuthData response = server.register(user);
             String authTokenString = response.getAuthToken();
             authData = new AuthData(username, authTokenString);
             do {
@@ -108,6 +119,7 @@ public class ClientCommunication {
                 menuNum = scanner.nextInt();
                 postLoginChoice(menuNum, out);
             } while (menuNum != 2);
+            run();
         } catch (DataAccessException e) {
             out.println("Registration Failed: " + e.getMessage());
         }
