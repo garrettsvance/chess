@@ -154,6 +154,7 @@ public class ClientCommunication {
         out.print("Game ID Number: ");
         int gameID = scanner.nextInt();
         out.print("Player Color - [WHITE|BLACK|<empty>]: ");
+        scanner.nextLine();
         String playerColor = scanner.nextLine();
         try {
             ChessGame response = server.joinGame(authData, playerColor, gameID);

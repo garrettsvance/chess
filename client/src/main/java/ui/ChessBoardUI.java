@@ -20,7 +20,10 @@ public class ChessBoardUI {
 
 
     public void printBoard(ChessGame game) {
-        ChessBoard board = game.getBoard();
+        //ChessBoard board = game.getBoard();
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+
         String teamColor = String.valueOf(game.getTeamTurn());
 
         String whiteHorizontal = "hgfedcba";
