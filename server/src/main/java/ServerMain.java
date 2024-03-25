@@ -1,8 +1,6 @@
-import chess.*;
 import server.Server;
-import spark.Spark;
 
-public class Main {
+public class ServerMain {
     public static void main(String[] args) {
 
         var server = new Server();

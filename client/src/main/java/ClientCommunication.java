@@ -125,9 +125,11 @@ public class ClientCommunication {
     }
 
     public void createGame(PrintStream out) {
+        String gameName;
         out.println("Create Game");
         out.println("Game Name: ");
-        String gameName = scanner.nextLine();
+        scanner.nextLine();
+        gameName = scanner.nextLine();
         try {
             server.createGame(authData, gameName);
         } catch (DataAccessException e) {
