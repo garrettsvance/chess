@@ -78,7 +78,7 @@ public class ClientCommunication {
         try {
             AuthData response = server.login(user);
             String authTokenString = response.getAuthToken();
-            authData = new AuthData(username, authTokenString);
+            authData = new AuthData(authTokenString, username);
             do {
                 menuUI.postLogin(out);
                 menuNum = scanner.nextInt();

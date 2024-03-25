@@ -22,7 +22,7 @@ public class ServerFacade {
     }
 
 
-    public AuthData login(UserData user) throws DataAccessException { // TODO: should this be a handler type?
+    public AuthData login(UserData user) throws DataAccessException {
         var request = new LoginRequest(user.getUserName(), user.getPassword(), user.getEmail());
         return this.makeRequest("POST", "/session", request, AuthData.class, null);
     }
@@ -65,7 +65,8 @@ public class ServerFacade {
             http.setRequestMethod(method);
 
             if (auth != null) {
-                http.setRequestProperty("authorization", auth.getAuthToken());
+                String authToken = auth.getAuthToken();
+                http.setRequestProperty("Authorization", authToken);
             }
             http.setDoOutput(true);
             writeBody(request, http);
