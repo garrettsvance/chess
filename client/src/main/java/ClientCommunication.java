@@ -3,12 +3,11 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.junit.jupiter.api.DisplayNameGenerator;
+import server.ServerFacade;
 import ui.ChessBoardUI;
 import ui.EscapeSequences;
 import ui.MenuUI;
 
-import javax.xml.crypto.Data;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
@@ -142,7 +141,9 @@ public class ClientCommunication {
         try {
             var response = server.listGames(authData);
             for (GameData game : response) {
-                out.println("Game Name: " + game.getGameName() + ", Game ID: " + game.getGameID());
+                out.println("Game Name: " + game.getGameName() + ", Game ID: " + game.getGameID() +
+                        ", White Username: " + game.getWhiteUsername() + ", Black Username: " + game.getBlackUsername()
+                );
             }
         } catch (DataAccessException e) {
             out.println("List Games Failed: " + e.getMessage());

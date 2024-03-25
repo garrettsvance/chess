@@ -18,6 +18,8 @@ public class MenuUI {
     }
 
     public void postLogin(PrintStream out) {
+        out.println();
+        out.println();
         out.println("Enter Menu Selection: ");
         out.println("1. Help");
         out.println("2. Logout");

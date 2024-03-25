@@ -1,3 +1,5 @@
+package server;
+
 import SharedServices.*;
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -13,10 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ServerFacade {
-    //each of these 7 methods should be one to two lines of code, and should call the actual coded methods in client communication
+
     private String serverURL;
 
     public ServerFacade(String url) {
@@ -46,12 +47,15 @@ public class ServerFacade {
     public ArrayList<GameData> listGames(AuthData authToken) throws DataAccessException {
         record ListGamesResponse(ArrayList<GameData> games) {}
         ListGamesResponse response = this.makeRequest("GET", "/game", null, ListGamesResponse.class, authToken);
+        if (response.games() == null) {
+            return null;
+        }
         return response.games();
     }
 
-    public void createGame(AuthData authToken, String gameName) throws DataAccessException {
+    public GameData createGame(AuthData authToken, String gameName) throws DataAccessException {
         var request = new CreateGameRequest(gameName, null, null);
-        this.makeRequest("POST", "/game", request, GameData.class, authToken);
+        return this.makeRequest("POST", "/game", request, GameData.class, authToken);
     }
 
     public ChessGame joinGame(AuthData authToken, String playerColor, Integer gameID) throws DataAccessException {
