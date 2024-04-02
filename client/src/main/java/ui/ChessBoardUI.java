@@ -26,19 +26,17 @@ public class ChessBoardUI {
 
         String teamColor = String.valueOf(game.getTeamTurn());
 
-        String whiteHorizontal = "hgfedcba";
+        String whiteHorizontal = "abcdefgh";
         String whiteVertical = "12345678";
-        String blackHorizontal = "abcdefgh";
+        String blackHorizontal = "hgfedcba";
         String blackVertical = "87654321";
 
         if (teamColor.equalsIgnoreCase("White")) {
             printBoardHelper(whiteHorizontal, whiteVertical, true, board);
             System.out.println();
-            printBoardHelper(blackHorizontal, blackVertical, false, board);
         } else {
             printBoardHelper(blackHorizontal, blackVertical, false, board);
             System.out.println();
-            printBoardHelper(whiteHorizontal, whiteVertical, true, board);
         }
     }
 
@@ -71,7 +69,7 @@ public class ChessBoardUI {
                     } else {
                         out.print(SET_BG_COLOR_BLACK);
                     }
-                    ChessPosition position = new ChessPosition(isWhite ? 9 - i : i, j);
+                    ChessPosition position = new ChessPosition(isWhite ? i : 9 - i, j);
                     ChessPiece piece = getPiece(position, board);
                     if (piece != null) {
                         String pieceChar = getPieceChar(piece);

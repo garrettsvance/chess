@@ -3,6 +3,9 @@ package ui;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
+import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREY;
+
 public class MenuUI {
 
     private final PrintStream out;
@@ -10,6 +13,7 @@ public class MenuUI {
     public MenuUI() {this.out = new PrintStream(System.out, true, StandardCharsets.UTF_8);}
 
     public void preLogin(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.println("Enter Menu Selection: ");
         out.println("1. Help");
         out.println("2. Quit");
@@ -18,6 +22,7 @@ public class MenuUI {
     }
 
     public void postLogin(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.println();
         out.println();
         out.println("Enter Menu Selection: ");
@@ -30,6 +35,7 @@ public class MenuUI {
     }
 
     public void preLoginHelp(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.println("Help - show command structure");
         out.println("Quit - exit program");
         out.println("Login - <USERNAME> <PASSWORD> - sign into account");
@@ -37,6 +43,7 @@ public class MenuUI {
     }
 
     public void postLoginHelp(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREY);
         out.println("Help - show command structure");
         out.println("Logout - sign out of account");
         out.println("Create Game - <NAME> - start a new game");
