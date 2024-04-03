@@ -1,3 +1,5 @@
+package ui;
+
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -216,6 +218,21 @@ public class HttpCommunication {
     }
 
 
+    private static class ServerMessageHandler implements WebSocketFacade.ServerMessageListener {
+        @Override
+        public void onLoadGame(LoadGameMessage message) {
+            System.out.println("Received LOAD_GAME message: " + message);
+        }
 
+        @Override
+        public void onNotification(notificationMessage message) {
+            System.out.println("Received NOTIFICATION message: " + message);
+        }
+
+        @Override
+        public void onError(ErrorMessage message) {
+            System.out.println("Received ERROR message: " + message);
+        }
+    }
 
 }

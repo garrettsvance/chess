@@ -1,6 +1,8 @@
 // this is the class that you run to start your server and such
 // you'll create separate classes for your chessboard ui and menu ui
 
+import ui.HttpCommunication;
+
 public class ClientMain {
     public static void main(String[] args) {
         var serverUrl = "http://localhost:8080";
