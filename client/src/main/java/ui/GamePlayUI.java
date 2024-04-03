@@ -5,11 +5,11 @@ import java.nio.charset.StandardCharsets;
 
 import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREY;
 
-public class GameplayUI {
+public class GamePlayUI {
 
     private final PrintStream out;
 
-    public GameplayUI() {this.out = new PrintStream(System.out, true, StandardCharsets.UTF_8);}
+    public GamePlayUI() {this.out = new PrintStream(System.out, true, StandardCharsets.UTF_8);}
 
     public void gamePlay(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREY);

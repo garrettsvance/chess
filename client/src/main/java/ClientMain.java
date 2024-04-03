@@ -7,6 +7,6 @@ public class ClientMain {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-        new ClientCommunication(serverUrl).run();
+        new HttpCommunication(serverUrl).run();
     }
 }

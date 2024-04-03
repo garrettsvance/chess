@@ -4,26 +4,26 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.ServerFacade;
-import ui.ChessBoardUI;
-import ui.EscapeSequences;
-import ui.MenuUI;
+import ui.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class ClientCommunication {
+public class HttpCommunication {
 // for phase 6, this becomes "http communication/communicator"
     private final ServerFacade server;
     private AuthData authData;
     MenuUI menuUI = new MenuUI();
     ChessBoardUI chessBoardUI = new ChessBoardUI();
+    GamePlayUI gamePlayUI = new GamePlayUI();
     Scanner scanner = new Scanner(System.in);
+    ChessGame game = null;
 
     int menuNum;
 
-    public ClientCommunication(String serverURL) {
+    public HttpCommunication(String serverURL) {
         server = new ServerFacade(serverURL);
     }
 
@@ -61,8 +61,21 @@ public class ClientCommunication {
         }
     }
 
+    public void gamePlayChoice(int menuNum, PrintStream out) {
+        switch (menuNum) {
+            case 1 -> gamePlayUI.gamePlayHelp(out);
+            case 2 -> redrawBoard(out);
+            case 3 -> leave(out);
+            case 4 -> makeMove(out);
+            case 5 -> resign(out);
+            case 6 -> highlightLegalMoves(out);
+            default -> out.println("Invalid Number");
+        }
+    }
+
     public void quit(PrintStream out) {
         out.println("Quit");
+        game = null;
         authData = null;
     }
 
@@ -129,6 +142,7 @@ public class ClientCommunication {
     public void logout(PrintStream out) {
         out.println("Logout");
         try {
+            game = null;
             server.logout(authData);
         } catch (DataAccessException e) {
             out.println("Logout Failed: " + e.getMessage());
@@ -171,6 +185,7 @@ public class ClientCommunication {
         String playerColor = scanner.nextLine();
         try {
             ChessGame response = server.joinGame(authData, playerColor, gameID);
+            game = response;
             chessBoardUI.printBoard(response);
         } catch (DataAccessException e) {
             out.println("Join Game Failed: " + e.getMessage());
@@ -184,10 +199,20 @@ public class ClientCommunication {
 
         try {
             ChessGame response = server.joinGame(authData, null, gameID);
+            game = response;
             chessBoardUI.printBoard(response);
         } catch (DataAccessException e) {
             out.println("Join Game as Observer Failed: " + e.getMessage());
         }
+    }
+
+    public void redrawBoard(PrintStream out) {
+        out.println("Redraw Chess Board");
+        chessBoardUI.printBoard(game);
+    }
+
+    public void leave(PrintStream out) {
+
     }
 
 
