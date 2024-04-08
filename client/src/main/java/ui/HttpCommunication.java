@@ -6,12 +6,14 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
 import ui.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Scanner;
+
 
 public class HttpCommunication {
 // for phase 6, this becomes "http communication/communicator"
@@ -41,7 +43,7 @@ public class HttpCommunication {
         } while (menuNum != 2);
     }
 
-    public void preLoginChoice(int menuNum, PrintStream out) {
+    private void preLoginChoice(int menuNum, PrintStream out) {
         switch (menuNum) {
             case 1 -> menuUI.preLoginHelp(out);
             case 2 -> quit(out);
@@ -51,7 +53,7 @@ public class HttpCommunication {
         }
     }
 
-    public void postLoginChoice(int menuNum, PrintStream out) {
+    private void postLoginChoice(int menuNum, PrintStream out) {
         switch (menuNum) {
             case 1 -> menuUI.postLoginHelp(out);
             case 2 -> logout(out);
@@ -63,7 +65,7 @@ public class HttpCommunication {
         }
     }
 
-    public void gamePlayChoice(int menuNum, PrintStream out) {
+    private void gamePlayChoice(int menuNum, PrintStream out) {
         switch (menuNum) {
             case 1 -> gamePlayUI.gamePlayHelp(out);
             case 2 -> redrawBoard(out);
@@ -218,20 +220,41 @@ public class HttpCommunication {
     }
 
 
-    private static class ServerMessageHandler implements WebSocketFacade.ServerMessageListener {
+    private class ServerMessageHandler implements WebSocketFacade.ServerMessageListener {
         @Override
         public void onLoadGame(LoadGameMessage message) {
             System.out.println("Received LOAD_GAME message: " + message);
+
+            webSocketGame = message.getGame();
         }
 
         @Override
-        public void onNotification(notificationMessage message) {
+        public void onNotification(NotificationMessage message) {
             System.out.println("Received NOTIFICATION message: " + message);
+
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN);
+            System.out.println();
+            System.out.println("Notification: " + message.getMessage());
+            System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+            System.out.println();
+            System.out.print("Enter Menu Number: ");
+            int menuChoice = scanner.nextInt();
+            gamePlayChoice(menuChoice, System.out);
+
         }
 
         @Override
         public void onError(ErrorMessage message) {
             System.out.println("Received ERROR message: " + message);
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
+            System.out.println();
+            System.out.println("ERROR DETECTED: " + message.getErrorMessage());
+            System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print("Enter Menu Number: ");
+            int menuChoice = scanner.nextInt();
+            gamePlayChoice(menuChoice, System.out);
         }
     }
 
