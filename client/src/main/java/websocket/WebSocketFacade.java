@@ -3,7 +3,8 @@ package websocket;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import webSocketMessages.serverMessages.*;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
+
 
 import javax.management.Notification; //TODO: check if correct import
 import javax.websocket.*;
@@ -104,7 +105,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void resignSocket(int gameID, String authToken) {
-        resignCommand command = new resignCommand(authToken, gameID);
+        ResignCommand command = new ResignCommand(authToken, gameID);
         sendUserCommand(command);
     }
 
