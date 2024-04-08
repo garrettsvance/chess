@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
@@ -12,6 +14,7 @@ import webSocketMessages.serverMessages.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -25,6 +28,12 @@ public class HttpCommunication {
     GamePlayUI gamePlayUI = new GamePlayUI();
     Scanner scanner = new Scanner(System.in);
     ChessGame game = null;
+    private WebSocketFacade ws;
+    private GameData currentGame;
+    private GameData[] gameList = null;
+    private int currentGameID;
+    private String alphas = "abcdefgh";
+    private ChessGame.TeamColor playerColor;
 
     int menuNum;
 
@@ -169,6 +178,7 @@ public class HttpCommunication {
 
     public void listGames(PrintStream out) {
         out.println("List Games");
+        populateGameList();
         try {
             var response = server.listGames(authData);
             for (GameData game : response) {
@@ -183,15 +193,16 @@ public class HttpCommunication {
 
     public void joinGame(PrintStream out) {
         out.println("Join Game");
+        populateGameList();
         out.print("Game ID Number: ");
-        int gameID = scanner.nextInt();
+        currentGameID = scanner.nextInt();
         out.print("Player Color - [WHITE|BLACK|<empty>]: ");
         scanner.nextLine();
         String playerColor = scanner.nextLine();
         try {
-            ChessGame response = server.joinGame(authData, playerColor, gameID);
+            ChessGame response = server.joinGame(authData, playerColor, currentGameID) ;
             game = response;
-            chessBoardUI.printBoard(response);
+            chessBoardUI.printBoard(response, false, null);
         } catch (DataAccessException e) {
             out.println("Join Game Failed: " + e.getMessage());
         }
@@ -199,13 +210,14 @@ public class HttpCommunication {
 
     public void joinObserver(PrintStream out) {
         out.println("Join as Observer");
+        populateGameList();
         out.print("Game ID Number: ");
         int gameID = scanner.nextInt();
 
         try {
             ChessGame response = server.joinGame(authData, null, gameID);
             game = response;
-            chessBoardUI.printBoard(response);
+            chessBoardUI.printBoard(response, false, null);
         } catch (DataAccessException e) {
             out.println("Join Game as Observer Failed: " + e.getMessage());
         }
@@ -213,13 +225,12 @@ public class HttpCommunication {
 
     public void redrawBoard(PrintStream out) {
         out.println("Redraw Chess Board");
-        chessBoardUI.printBoard(game);
+        chessBoardUI.printBoard(game, false, null);
     }
 
     public void leave(PrintStream out) {
         out.println("Leave");
-
-
+        ws.leaveGameSocket(currentGameID, authData.getAuthToken());
     }
 
     public void makeMove(PrintStream out) {
@@ -234,6 +245,38 @@ public class HttpCommunication {
 
     public void highlightLegalMoves(PrintStream out) {
         out.println("Highlight Legal Moves");
+        out.println("Enter Coordinates of Piece to Check - [c3, d8, etc]: ");
+        String coords = scanner.nextLine();
+        if (!checkCoords(coords)) {
+            out.println("Invalid Coordinates");
+            out.println();
+            highlightLegalMoves(out);
+        } else {
+            ChessPosition startPosition = stringToPosition(coords);
+            Collection<ChessMove> validMoves = game.validMoves(startPosition);
+            chessBoardUI.printBoard(game, true, validMoves);
+        }
+    }
+
+    public ChessPosition stringToPosition(String string) {
+        char letterPosition = string.charAt(0);
+        int col = alphas.indexOf(letterPosition) + 1;
+        int row = Integer.parseInt(string.substring(1));
+        return new ChessPosition(row, col);
+    }
+
+    public boolean checkCoords(String string) {
+        char letter = string.charAt(0);
+        int num = string.charAt(1) - '0';
+        return alphas.indexOf(letter) != -1 && (num >= 1 && num <= 8);
+    }
+
+    private void populateGameList() {
+        try {
+            gameList = server.listGames(authData).toArray(new GameData[0]);
+        } catch (Exception e) {
+            System.out.println("Error Populating GameList: " + e.getMessage());
+        }
     }
 
 

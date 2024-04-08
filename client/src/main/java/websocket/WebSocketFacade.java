@@ -28,12 +28,7 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    handleMessage(message);
-                }
-            });
+            this.session.addMessageHandler((MessageHandler.Whole<String>) this::handleMessage);
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new Exception(ex.getMessage());
         }
@@ -43,18 +38,18 @@ public class WebSocketFacade extends Endpoint {
         try {
             ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
             switch (serverMessage.getServerMessageType()) {
-                case LOAD_GAME:
+                case LOAD_GAME -> {
                     LoadGameMessage lgMessage = new Gson().fromJson(message, LoadGameMessage.class);
                     messageListener.onLoadGame(lgMessage);
-                    break;
-                case NOTIFICATION:
+                }
+                case NOTIFICATION -> {
                     NotificationMessage nMessage = new Gson().fromJson(message, NotificationMessage.class);
                     messageListener.onNotification(nMessage);
-                    break;
-                case ERROR:
+                }
+                case ERROR -> {
                     ErrorMessage eMessage = new Gson().fromJson(message, ErrorMessage.class);
                     messageListener.onError(eMessage);
-                    break;
+                }
             }
         } catch (JsonSyntaxException e) {
             System.err.println("Invalid JSON format: " + message);
@@ -62,7 +57,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     @Override
-    public void onOpen (Session session, EndPointConfig endpointConfig){}
+    public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
     public void setMessageListener(ServerMessageListener messageListener) {
         this.messageListener = messageListener;

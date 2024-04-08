@@ -1,12 +1,10 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 import static ui.EscapeSequences.*;
 
@@ -19,7 +17,7 @@ public class ChessBoardUI {
     }
 
 
-    public void printBoard(ChessGame game) {
+    public void printBoard(ChessGame game, boolean showMoves, Collection<ChessMove> legalMoves) {
         //ChessBoard board = game.getBoard();
         ChessBoard board = new ChessBoard();
         board.resetBoard();
@@ -32,35 +30,31 @@ public class ChessBoardUI {
         String blackVertical = "87654321";
 
         if (teamColor.equalsIgnoreCase("White")) {
-            printBoardHelper(whiteHorizontal, whiteVertical, true, board);
+            printBoardHelper(whiteHorizontal, whiteVertical, true, board, showMoves, legalMoves);
             System.out.println();
         } else {
-            printBoardHelper(blackHorizontal, blackVertical, false, board);
+            printBoardHelper(blackHorizontal, blackVertical, false, board, showMoves, legalMoves);
             System.out.println();
         }
     }
 
-    public void printBoardHelper(String horizontal, String vertical, boolean isWhite, ChessBoard board) {
+    public void printBoardHelper(String horizontal, String vertical, boolean isWhite, ChessBoard board, boolean showMoves, Collection<ChessMove> legalMoves) {
         String padding = "\u2005";
+        boolean isLegalMove;
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (i == 0 || i == 9 || j == 0 || j == 9) {
                     out.print(SET_BG_COLOR_DARK_GREY);
-                    if ((i == 0 || i == 9) && (j == 0 || j == 9)) {
-                        // Corner tiles
+                    if ((i == 0 || i == 9) && (j == 0 || j == 9)) { // Corner tiles
                         out.print(padding + "\u2001\u2005\u200A" + "\u200A"); // swap last val for "padding" on laptop
-                    } else if (i == 0 || i == 9) {
-                        // Horizontal coordinate tiles
-
+                    } else if (i == 0 || i == 9) {                         // Horizontal coordinate tiles
                         // Desktop Padding
                         out.print("\u200A" + horizontal.charAt(j - 1) + "\u2005" + "\u200A" + "\u200A" + "\u200A");
 
                         // Laptop Padding:
                         //ut.print("\u200A" + horizOrient.charAt(j - 1) + "\u200A" + "\u2001");
-
-                    } else {
-                        // Vertical coordinate tiles
+                    } else { // Vertical coordinate tiles
                         out.print(padding + vertical.charAt(8 - i) + padding);
                     }
                 } else {
@@ -73,9 +67,20 @@ public class ChessBoardUI {
                     ChessPiece piece = getPiece(position, board);
                     if (piece != null) {
                         String pieceChar = getPieceChar(piece);
+                        if (showMoves) {
+                            isLegalMove = false;
+                            for (ChessMove move : legalMoves) {
+                                if (move.getStartPosition().equals(position)) {
+                                    isLegalMove = true;
+                                    break;
+                                }
+                            }
+                            if (isLegalMove) {
+                                out.print(SET_BG_COLOR_GREEN);
+                            }
+                        }
                         out.print(padding + pieceChar + padding);
-                    } else {
-                        // Empty tile
+                    } else { // Empty tile
                         out.print(padding + "\u2001\u2005\u200A" + padding);
                     }
                 }
