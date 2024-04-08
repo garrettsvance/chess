@@ -8,6 +8,7 @@ import model.UserData;
 import server.ServerFacade;
 import websocket.WebSocketFacade;
 import ui.*;
+import webSocketMessages.serverMessages.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -216,7 +217,23 @@ public class HttpCommunication {
     }
 
     public void leave(PrintStream out) {
+        out.println("Leave");
 
+
+    }
+
+    public void makeMove(PrintStream out) {
+        out.println("Make Move");
+
+
+    }
+
+    public void resign(PrintStream out) {
+        out.println("Resign");
+    }
+
+    public void highlightLegalMoves(PrintStream out) {
+        out.println("Highlight Legal Moves");
     }
 
 
@@ -225,7 +242,7 @@ public class HttpCommunication {
         public void onLoadGame(LoadGameMessage message) {
             System.out.println("Received LOAD_GAME message: " + message);
 
-            webSocketGame = message.getGame();
+            game = message.getGame();
         }
 
         @Override
@@ -250,7 +267,7 @@ public class HttpCommunication {
             Scanner scanner = new Scanner(System.in);
             System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
             System.out.println();
-            System.out.println("ERROR DETECTED: " + message.getErrorMessage());
+            System.out.println("ERROR DETECTED: " + message.getMessage());
             System.out.print(EscapeSequences.RESET_TEXT_COLOR);
             System.out.print("Enter Menu Number: ");
             int menuChoice = scanner.nextInt();
