@@ -17,4 +17,5 @@ public class JoinObserverCommand extends UserGameCommand {
     public int getGameID() {
         return gameID;
     }
+
 }
