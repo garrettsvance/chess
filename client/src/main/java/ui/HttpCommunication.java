@@ -26,19 +26,19 @@ public class HttpCommunication {
     private AuthData authData;
     MenuUI menuUI = new MenuUI();
     ChessBoardUI chessBoardUI = new ChessBoardUI();
-    GamePlayUI gamePlayUI = new GamePlayUI();
     Scanner scanner = new Scanner(System.in);
     ChessGame game = null;
     private WebSocketFacade ws;
     private GameData currentGame;
-    private GameData[] gameList = null;
     private int currentGameID;
     private String alphas = "abcdefgh";
     private ChessGame.TeamColor playerColor;
+    private final String serverURL;
 
     int menuNum;
 
     public HttpCommunication(String serverURL) {
+        this.serverURL = serverURL;
         server = new ServerFacade(serverURL);
     }
 
@@ -78,7 +78,7 @@ public class HttpCommunication {
 
     private void gamePlayChoice(int menuNum, PrintStream out) {
         switch (menuNum) {
-            case 1 -> gamePlayUI.gamePlayHelp(out);
+            case 1 -> menuUI.gamePlayHelp(out);
             case 2 -> redrawBoard(out);
             case 3 -> leave(out);
             case 4 -> makeMove(out);
@@ -200,12 +200,33 @@ public class HttpCommunication {
         out.print("Player Color - [WHITE|BLACK|<empty>]: ");
         scanner.nextLine();
         String playerColor = scanner.nextLine();
+        ChessGame.TeamColor teamColor = setTeamColor(playerColor);
         try {
             ChessGame response = server.joinGame(authData, playerColor, currentGameID) ;
             game = response;
             chessBoardUI.printBoard(response, false, null);
-        } catch (DataAccessException e) {
+
+            ws = new WebSocketFacade(serverURL);
+            ws.setMessageListener(new ServerMessageHandler());
+            ws.joinPlayerSocket(currentGameID, teamColor, authData.getAuthToken());
+
+            menuUI.gamePlay(out);
+            do {
+                menuNum = scanner.nextInt();
+                gamePlayChoice(menuNum, out);
+            } while (menuNum != 3 && menuNum != 5);
+        } catch (Exception e) {
             out.println("Join Game Failed: " + e.getMessage());
+        }
+    }
+
+    private ChessGame.TeamColor setTeamColor(String playerColor) {
+        if (playerColor.equalsIgnoreCase("white")) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (playerColor.equalsIgnoreCase("black")) {
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
         }
     }
 
@@ -219,7 +240,16 @@ public class HttpCommunication {
             ChessGame response = server.joinGame(authData, null, gameID);
             game = response;
             chessBoardUI.printBoard(response, false, null);
-        } catch (DataAccessException e) {
+
+            ws = new WebSocketFacade(serverURL);
+            ws.setMessageListener(new ServerMessageHandler());
+            ws.joinPlayerSocket(currentGameID, playerColor, authData.getAuthToken());
+            menuUI.gamePlay(out);
+            do {
+                menuNum = scanner.nextInt();
+                gamePlayChoice(menuNum, out);
+            } while (menuNum != 3 && menuNum != 5);
+        } catch (Exception e) {
             out.println("Join Game as Observer Failed: " + e.getMessage());
         }
     }
@@ -279,9 +309,7 @@ public class HttpCommunication {
             ChessPiece.PieceType promotionPiece = promotionPieceType(promotionString);
             move = new ChessMove(startPosition, endPosition, promotionPiece);
         }
-
         ws.makeMoveSocket(authData.getAuthToken(), currentGameID, move);
-
     }
 
     private ChessPiece.PieceType promotionPieceType(String promotionString) {
@@ -334,7 +362,7 @@ public class HttpCommunication {
 
     private void populateGameList() {
         try {
-            gameList = server.listGames(authData).toArray(new GameData[0]);
+            GameData[] gameList = server.listGames(authData).toArray(new GameData[0]);
         } catch (Exception e) {
             System.out.println("Error Populating GameList: " + e.getMessage());
         }
