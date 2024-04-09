@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class ServerFacade {
 
-    private String serverURL;
+    private final String serverURL;
 
     public ServerFacade(String url) {
         serverURL = url;

@@ -243,7 +243,7 @@ public class HttpCommunication {
 
             ws = new WebSocketFacade(serverURL);
             ws.setMessageListener(new ServerMessageHandler());
-            ws.joinPlayerSocket(currentGameID, playerColor, authData.getAuthToken());
+            ws.observePlayerSocket(currentGameID, authData.getAuthToken());
             menuUI.gamePlay(out);
             do {
                 menuNum = scanner.nextInt();
