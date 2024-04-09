@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import dataAccess.DataAccessException;
 import model.AuthData;
@@ -235,12 +236,72 @@ public class HttpCommunication {
 
     public void makeMove(PrintStream out) {
         out.println("Make Move");
+        out.print("Enter Coordinates of Piece to Move - [c3, d8, etc]: ");
+        String coords = scanner.nextLine();
+        if (!checkCoords(coords)) {
+            out.println("Invalid Coordinates");
+            out.println();
+            makeMove(out);
+        }
+        ChessPosition startPosition = stringToPosition(coords);
+        ChessPiece piece = chessBoardUI.getPiece(startPosition, game.getBoard());
+        if (piece.getTeamColor() != playerColor) {
+            out.println("You Can Only Move your Own Team");
+            out.println();
+            makeMove(out);
+        }
+        Collection<ChessMove> validMoves = game.validMoves(startPosition);
+        out.print("Enter Coordinates of Destination Square - [c3, d8, etc]: ");
+        String destCoords = scanner.nextLine();
+        if (!checkCoords(destCoords)) {
+            out.println("Invalid Coordinates");
+            out.println();
+            makeMove(out);
+        }
+        ChessPosition endPosition = stringToPosition(destCoords);
+        ChessMove move = new ChessMove(startPosition, endPosition, null);
 
+        boolean isValidMove = false;
+        for (ChessMove validMove : validMoves) {
+            if (validMove.getEndPosition().equals(endPosition)) {
+                isValidMove = true;
+                break;
+            }
+        }
+        if (!isValidMove) {
+            out.println("Not a Valid Move for the Selected Piece");
+            makeMove(out);
+        }
 
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promotionMove(piece, move)) {
+            out.print("Enter Promotion Piece Type - [Q|R|B|N]: ");
+            String promotionString = scanner.nextLine();
+            ChessPiece.PieceType promotionPiece = promotionPieceType(promotionString);
+            move = new ChessMove(startPosition, endPosition, promotionPiece);
+        }
+
+        ws.makeMoveSocket(authData.getAuthToken(), currentGameID, move);
+
+    }
+
+    private ChessPiece.PieceType promotionPieceType(String promotionString) {
+        return switch (promotionString.toUpperCase()) {
+            case "Q" -> ChessPiece.PieceType.QUEEN;
+            case "R" -> ChessPiece.PieceType.ROOK;
+            case "B" -> ChessPiece.PieceType.BISHOP;
+            case "N" -> ChessPiece.PieceType.KNIGHT;
+            default -> throw new IllegalArgumentException("Invalid Promotion Character");
+        };
+    }
+
+    private boolean promotionMove(ChessPiece piece, ChessMove move) {
+        return ((piece.getTeamColor() == ChessGame.TeamColor.WHITE && move.getEndPosition().getRow() == 8) ||
+                (piece.getTeamColor() == ChessGame.TeamColor.BLACK && move.getEndPosition().getRow() == 1));
     }
 
     public void resign(PrintStream out) {
         out.println("Resign");
+        ws.resignSocket(currentGameID, authData.getAuthToken());
     }
 
     public void highlightLegalMoves(PrintStream out) {
