@@ -12,13 +12,17 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.Session;
 import org.springframework.security.core.parameters.P;
 import webSocketMessages.serverMessages.ErrorMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 @WebSocket
 public class WebSocketHandler {
@@ -27,7 +31,9 @@ public class WebSocketHandler {
     private GameDAO gameDAO;
     private Session session;
 
-    private final ConnectionManager connections = new ConnectionManager();
+    public final ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, List<String>> userMap = new ConcurrentHashMap<>();
+
 
 
     public WebSocketHandler() {
@@ -54,6 +60,24 @@ public class WebSocketHandler {
     }
 
     private void joinObserver(JoinObserverCommand action) throws DataAccessException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        String user = authDAO.findToken(authToken).getUserName();
+        GameData gameData = gameDAO.findGame(gameID);
+
+        if (user == null) {
+            sendErrorMessage("Unauthorized");
+            return;
+        }
+
+        if (gameData == null) {
+            sendErrorMessage("Game not found");
+            return;
+        }
+
+        sessions.put(authToken, session);
+        userMap.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(authToken);
+        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.getGameObject());
 
     }
 
@@ -94,5 +118,17 @@ public class WebSocketHandler {
         ServerMessage error = new ErrorMessage(message);
         sendMessage(new Gson().toJson(error), session);
     }
+
+    private void broadcast(String message, int gameID, String currentAuth) {
+        List<String> tokens = userMap.get(gameID);
+        for(String storedAuth : tokens) {
+            if (!storedAuth.equals(currentAuth)) {
+                NotificationMessage notificationMessage = new NotificationMessage(message);
+                String notification = new Gson().toJson(notificationMessage);
+                sendMessage(notification, sessions.get(storedAuth));
+            }
+        }
+    }
+
 
 }
