@@ -107,16 +107,29 @@ public class WebSocketHandler {
         sendMessage(new Gson().toJson(loadGameMessage), session);
         String message = username + " joined the game as the " + String.valueOf(playerColor) + " team.";
         broadcast(message, gameID, authToken);
-
     }
 
     private void leave(LeaveCommand action) throws DataAccessException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        String username = authDAO.findToken(authToken).getUserName();
+        GameData gameData = gameDAO.findGame(gameID);
 
+        if (username == null) {
+            sendErrorMessage("Unauthorized");
+            return;
+        }
+
+        if (gameData == null) {
+            sendErrorMessage("Game not found");
+            return;
+        }
+
+        userMap.get(gameID).remove(authToken);
+        String message = username + " has left the game.";
+        broadcast(message, gameID, authToken);
     }
 
-    private void leaveHelper(int gameID, String authToken) {
-
-    }
 
     private void makeMove(MakeMoveCommand action) throws DataAccessException {
 
