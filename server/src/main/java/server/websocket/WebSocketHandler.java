@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -62,10 +63,10 @@ public class WebSocketHandler {
     private void joinObserver(JoinObserverCommand action) throws DataAccessException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
-        String user = authDAO.findToken(authToken).getUserName();
+        String username = authDAO.findToken(authToken).getUserName();
         GameData gameData = gameDAO.findGame(gameID);
 
-        if (user == null) {
+        if (username == null) {
             sendErrorMessage("Unauthorized");
             return;
         }
@@ -78,10 +79,34 @@ public class WebSocketHandler {
         sessions.put(authToken, session);
         userMap.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(authToken);
         LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.getGameObject());
-
+        sendMessage(new Gson().toJson(loadGameMessage), session);
+        String message = username + " joined the game as an observer";
+        broadcast(message, gameID, authToken);
     }
 
     private void joinPlayer(JoinPlayerCommand action) throws DataAccessException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        ChessGame.TeamColor playerColor = action.getPlayerColor();
+        String username = authDAO.findToken(authToken).getUserName();
+        GameData gameData = gameDAO.findGame(gameID);
+
+        if (username == null || playerColor == null) {
+            sendErrorMessage("Error Joining Player, auth or playercolor null");
+            return;
+        }
+
+        if (gameData == null) {
+            sendErrorMessage("Game not found");
+            return;
+        }
+
+        sessions.put(authToken, session);
+        userMap.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(authToken);
+        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.getGameObject());
+        sendMessage(new Gson().toJson(loadGameMessage), session);
+        String message = username + " joined the game as the " + String.valueOf(playerColor) + " team.";
+        broadcast(message, gameID, authToken);
 
     }
 
