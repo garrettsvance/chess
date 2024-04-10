@@ -17,7 +17,7 @@ import chess.ChessMove;
 
 public class WebSocketFacade extends Endpoint {
 
-    Session session;
+    private Session session;
     private ServerMessageListener messageListener;
 
     public WebSocketFacade(String url) throws Exception {
@@ -28,8 +28,13 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            this.session.addMessageHandler((MessageHandler.Whole<String>) this::handleMessage);
-        } catch (DeploymentException | IOException | URISyntaxException ex) {
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    handleMessage(message);
+                }
+            });
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }
