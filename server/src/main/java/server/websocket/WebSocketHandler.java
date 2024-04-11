@@ -1,6 +1,9 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -132,16 +135,80 @@ public class WebSocketHandler {
 
 
     private void makeMove(MakeMoveCommand action) throws DataAccessException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        String username = authDAO.findToken(authToken).getUserName();
+        GameData gameData = gameDAO.findGame(gameID);
+        String startPosition = String.valueOf(action.getMove().getStartPosition());
+        String endPosition = String.valueOf(action.getMove().getEndPosition());
 
+
+
+        if (username == null) {
+            sendErrorMessage("Unauthorized");
+            return;
+        }
+
+        if (gameData == null) {
+            sendErrorMessage("Game not found");
+            return;
+        }
+
+        ChessGame game = gameData.getGameObject();
+        ChessGame.TeamColor turn = game.getTeamTurn();
+
+        if (turn == null) {
+            sendErrorMessage("Game Concluded");
+            return;
+        }
+
+        if (game.isInCheck(turn)) {
+            if (game.isInCheckmate(turn)) {
+                game.setTeamTurn(null);
+                sendErrorMessage(username + " is in checkmate.");
+                return;
+            } else {
+                game.setTeamTurn(null);
+                sendErrorMessage(username + " is in check.");
+                return;
+            }
+        }
+
+        ChessPiece.PieceType piece = game.getBoard().getPiece(action.getMove().getStartPosition()).getPieceType();
+        ChessGame.TeamColor swapTurn = (turn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+        try {
+            game.makeMove(action.getMove());
+        } catch (InvalidMoveException e) {
+            sendErrorMessage("Invalid Move");
+        }
+
+
+        game.setTeamTurn(swapTurn);
+        loadBroadcast(gameID, game);
+        String message = username + " moved their " + piece + " from " + startPosition + " to " + endPosition;
+        broadcast(message, gameID, authToken);
     }
 
     private void resign(ResignCommand action) throws DataAccessException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        String username = authDAO.findToken(authToken).getUserName();
+        GameData gameData = gameDAO.findGame(gameID);
 
-    }
+        if (username == null) {
+            sendErrorMessage("Unauthorized");
+            return;
+        }
 
-    private void notifyCurrentClient(String message) {
-        NotificationMessage notificationMessage = new NotificationMessage(message);
-        sendMessage(new Gson().toJson(notificationMessage), session);
+        if (gameData == null) {
+            sendErrorMessage("Game not found");
+            return;
+        }
+
+        gameData.getGameObject().setTeamTurn(null);
+        String message = username + " has resigned from the game. Opponent wins!";
+        broadcast(message, gameID, authToken);
     }
 
     private void sendMessage(String message, Session session) {
@@ -164,6 +231,17 @@ public class WebSocketHandler {
                 NotificationMessage notificationMessage = new NotificationMessage(message);
                 String notification = new Gson().toJson(notificationMessage);
                 sendMessage(notification, sessions.get(storedAuth));
+            }
+        }
+    }
+
+    private void loadBroadcast(int gameID, ChessGame game){
+        List<String> tokens = userMap.get(gameID);
+        for (String storedAuth : tokens) {
+            if (sessions.containsKey(storedAuth)) {
+                Session session = sessions.get(storedAuth);
+                LoadGameMessage loadGameMessage = new LoadGameMessage(game);
+                sendMessage(new Gson().toJson(loadGameMessage), session);
             }
         }
     }
