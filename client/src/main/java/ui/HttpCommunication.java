@@ -34,6 +34,7 @@ public class HttpCommunication {
     private String alphas = "abcdefgh";
     private ChessGame.TeamColor playerColor;
     private final String serverURL;
+    private GameData[] gameList = null;
 
     int menuNum;
 
@@ -362,7 +363,7 @@ public class HttpCommunication {
 
     private void populateGameList() {
         try {
-            GameData[] gameList = server.listGames(authData).toArray(new GameData[0]);
+            gameList = server.listGames(authData).toArray(new GameData[0]);
         } catch (Exception e) {
             System.out.println("Error Populating GameList: " + e.getMessage());
         }

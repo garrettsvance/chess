@@ -10,20 +10,20 @@ import com.google.gson.JsonParser;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import org.eclipse.jetty.websocket.api.Session;
-import org.springframework.security.core.parameters.P;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,7 +36,6 @@ public class WebSocketHandler {
     private Session session;
 
     public final ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, List<String>> userMap = new ConcurrentHashMap<>();
 
 
 
@@ -63,13 +62,15 @@ public class WebSocketHandler {
         }
     }
 
-    private void joinObserver(JoinObserverCommand action) throws DataAccessException {
+
+    private void joinObserver(JoinObserverCommand action) throws DataAccessException, IOException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
         String username = authDAO.findToken(authToken).getUserName();
         GameData gameData = gameDAO.findGame(gameID);
 
-        if (username == null) {
+
+        if (username == null)  {
             sendErrorMessage("Unauthorized");
             return;
         }
@@ -79,22 +80,23 @@ public class WebSocketHandler {
             return;
         }
 
-        sessions.put(authToken, session);
-        userMap.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(authToken);
-        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.getGameObject());
-        sendMessage(new Gson().toJson(loadGameMessage), session);
-        String message = username + " joined the game as an observer";
+        ChessGame gameObject = gameData.getGameObject();
+        session.getRemote().sendString(new Gson().toJson(new LoadGameMessage(gameObject)));
+        var ws = new WebSocketConnection(gameID, session);
+        addConnection(authToken, ws);
+        String message = username + " has joined the game as an observer.";
         broadcast(message, gameID, authToken);
     }
 
-    private void joinPlayer(JoinPlayerCommand action) throws DataAccessException {
+
+    private void joinPlayer(JoinPlayerCommand action) throws DataAccessException, IOException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
-        ChessGame.TeamColor playerColor = action.getPlayerColor();
         String username = authDAO.findToken(authToken).getUserName();
         GameData gameData = gameDAO.findGame(gameID);
+        String playerColorString;
 
-        if (username == null || playerColor == null) {
+        if (username == null) {
             sendErrorMessage("Error Joining Player, auth or playercolor null");
             return;
         }
@@ -104,11 +106,19 @@ public class WebSocketHandler {
             return;
         }
 
-        sessions.put(authToken, session);
-        userMap.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(authToken);
-        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.getGameObject());
-        sendMessage(new Gson().toJson(loadGameMessage), session);
-        String message = username + " joined the game as the " + String.valueOf(playerColor) + " team.";
+        ChessGame.TeamColor playerColor = action.getPlayerColor();
+        if (playerColor == null) {
+            playerColorString = "observer.";
+        } else {
+            playerColorString = String.valueOf(playerColor);
+        }
+
+
+        ChessGame gameObject = gameData.getGameObject();
+        session.getRemote().sendString(new Gson().toJson(new LoadGameMessage(gameObject)));
+        var ws = new WebSocketConnection(gameID, session);
+        addConnection(authToken, ws);
+        String message = username + " joined the game as " + playerColorString;
         broadcast(message, gameID, authToken);
     }
 
