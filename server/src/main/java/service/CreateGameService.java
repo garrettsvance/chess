@@ -1,6 +1,7 @@
 package service;
 import SharedServices.CreateGameRequest;
 import SharedServices.CreateGameResult;
+import chess.ChessGame;
 import dataAccess.*;
 import model.GameData;
 
@@ -27,7 +28,8 @@ public class CreateGameService {
         } else if (gameName == null){
             return new CreateGameResult(null, "Error: bad request", null);
         } else {
-            GameData game = new GameData(gameID, request.whiteUsername(), request.blackUsername(), gameName);
+            ChessGame gameObject = new ChessGame();
+            GameData game = new GameData(gameID, request.whiteUsername(), request.blackUsername(), gameName, gameObject);
             gameDAO.insertGame(game);
             return new CreateGameResult(game, "success", game.getGameID());
         }

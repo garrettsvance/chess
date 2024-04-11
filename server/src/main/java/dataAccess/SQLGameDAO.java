@@ -1,5 +1,7 @@
 package dataAccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.ResultSet;
@@ -43,7 +45,8 @@ public class SQLGameDAO implements GameDAO {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {
-                        return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"));
+                        ChessGame gameObject = new Gson().fromJson(rs.getString("gameName"), ChessGame.class);
+                        return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"), gameObject);
                     }
                 }
             }
@@ -76,8 +79,8 @@ public class SQLGameDAO implements GameDAO {
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
         var gameName = rs.getString("gameName");
-        // gamestate?
-        return new GameData(gameID, whiteUsername, blackUsername, gameName);
+        ChessGame gameObject = new Gson().fromJson(rs.getString("gameName"), ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, gameObject);
     }
 
 

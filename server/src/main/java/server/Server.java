@@ -1,10 +1,13 @@
 package server;
 
 import dataAccess.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 import spark.*;
 
 public class Server {
+
+    private WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
 
@@ -41,7 +44,7 @@ public class Server {
         CreateGameService createGameService = new CreateGameService(authDAO, gameDAO);
         JoinGameService joinGameService = new JoinGameService(authDAO, gameDAO);
 
-
+        Spark.webSocket("/connect", webSocketHandler);
         Spark.post("/session", new server.Handler.LoginHandler(loginService));
         Spark.delete("/db", new server.Handler.ClearApplicationHandler(clearApplicationService));
         Spark.post("/user", new server.Handler.RegisterHandler(registerService));
