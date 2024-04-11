@@ -62,15 +62,10 @@ public class WebSocketHandler {
         }
     }
 
-
-    private void joinObserver(JoinObserverCommand action) throws DataAccessException, IOException {
-        int gameID = action.getGameID();
-        String authToken = action.getAuthToken();
-        String username = authDAO.findToken(authToken).getUserName();
+    private void joinHelper(int gameID, String authToken, String username, ChessGame.TeamColor playerColor) throws DataAccessException, IOException {
         GameData gameData = gameDAO.findGame(gameID);
 
-
-        if (username == null)  {
+        if (username == null) {
             sendErrorMessage("Unauthorized");
             return;
         }
@@ -84,42 +79,29 @@ public class WebSocketHandler {
         session.getRemote().sendString(new Gson().toJson(new LoadGameMessage(gameObject)));
         var ws = new WebSocketConnection(gameID, session);
         addConnection(authToken, ws);
-        String message = username + " has joined the game as an observer.";
+
+        String playerColorString = (playerColor == null) ? " as an observer." : " as " + playerColor;
+        String message = username + " has joined the game" + playerColorString;
         broadcast(message, gameID, authToken);
     }
+
+
+    private void joinObserver(JoinObserverCommand action) throws DataAccessException, IOException {
+        int gameID = action.getGameID();
+        String authToken = action.getAuthToken();
+        String username = authDAO.findToken(authToken).getUserName();
+        joinHelper(gameID, authToken, username, null);
+    }
+
 
 
     private void joinPlayer(JoinPlayerCommand action) throws DataAccessException, IOException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
         String username = authDAO.findToken(authToken).getUserName();
-        GameData gameData = gameDAO.findGame(gameID);
-        String playerColorString;
-
-        if (username == null) {
-            sendErrorMessage("Error Joining Player, auth or playercolor null");
-            return;
-        }
-
-        if (gameData == null) {
-            sendErrorMessage("Game not found");
-            return;
-        }
-
         ChessGame.TeamColor playerColor = action.getPlayerColor();
-        if (playerColor == null) {
-            playerColorString = "observer.";
-        } else {
-            playerColorString = String.valueOf(playerColor);
-        }
+        joinHelper(gameID, authToken, username, playerColor);
 
-
-        ChessGame gameObject = gameData.getGameObject();
-        session.getRemote().sendString(new Gson().toJson(new LoadGameMessage(gameObject)));
-        var ws = new WebSocketConnection(gameID, session);
-        addConnection(authToken, ws);
-        String message = username + " joined the game as " + playerColorString;
-        broadcast(message, gameID, authToken);
     }
 
     private void leave(LeaveCommand action) throws DataAccessException {
