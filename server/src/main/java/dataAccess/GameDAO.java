@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -14,6 +15,8 @@ public interface GameDAO {
     Collection<GameData> findAll() throws DataAccessException, SQLException;
 
     void claimSpot(String userName, String color, Integer gameID) throws DataAccessException;
+
+    void updateGame(ChessGame game, int gameID) throws DataAccessException, SQLException;
 
     void clearTokens() throws DataAccessException;
 

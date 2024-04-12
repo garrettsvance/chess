@@ -1,16 +1,9 @@
 package server.websocket;
 
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import dataAccess.*;
-import model.AuthData;
 import model.GameData;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
@@ -22,10 +15,10 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @WebSocket
@@ -35,7 +28,7 @@ public class WebSocketHandler {
     private GameDAO gameDAO;
     private Session session;
 
-    public final ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, WebSocketConnection> sessions = new ConcurrentHashMap<>();
 
 
 
@@ -85,6 +78,10 @@ public class WebSocketHandler {
         broadcast(message, gameID, authToken);
     }
 
+    private void addConnection(String authToken, WebSocketConnection ws) {
+        sessions.put(authToken, ws);
+    }
+
 
     private void joinObserver(JoinObserverCommand action) throws DataAccessException, IOException {
         int gameID = action.getGameID();
@@ -101,7 +98,6 @@ public class WebSocketHandler {
         String username = authDAO.findToken(authToken).getUserName();
         ChessGame.TeamColor playerColor = action.getPlayerColor();
         joinHelper(gameID, authToken, username, playerColor);
-
     }
 
     private void leave(LeaveCommand action) throws DataAccessException {
@@ -120,13 +116,13 @@ public class WebSocketHandler {
             return;
         }
 
-        userMap.get(gameID).remove(authToken);
+        sessions.remove(authToken);
         String message = username + " has left the game.";
         broadcast(message, gameID, authToken);
     }
 
 
-    private void makeMove(MakeMoveCommand action) throws DataAccessException {
+    private void makeMove(MakeMoveCommand action) throws DataAccessException, SQLException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
         String username = authDAO.findToken(authToken).getUserName();
@@ -149,40 +145,24 @@ public class WebSocketHandler {
         ChessGame game = gameData.getGameObject();
         ChessGame.TeamColor turn = game.getTeamTurn();
 
-        if (turn == null) {
-            sendErrorMessage("Game Concluded");
-            return;
-        }
-
-        if (game.isInCheck(turn)) {
-            if (game.isInCheckmate(turn)) {
-                game.setTeamTurn(null);
-                sendErrorMessage(username + " is in checkmate.");
-                return;
-            } else {
-                game.setTeamTurn(null);
-                sendErrorMessage(username + " is in check.");
-                return;
-            }
-        }
-
         ChessPiece.PieceType piece = game.getBoard().getPiece(action.getMove().getStartPosition()).getPieceType();
         ChessGame.TeamColor swapTurn = (turn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
 
         try {
             game.makeMove(action.getMove());
         } catch (InvalidMoveException e) {
-            sendErrorMessage("Invalid Move");
+            sendErrorMessage("Invalid Move: " + e.getMessage());
         }
 
 
         game.setTeamTurn(swapTurn);
-        loadBroadcast(gameID, game);
+        gameDAO.updateGame(game, gameID);
+        broadcastGame(gameID, "", game);
         String message = username + " moved their " + piece + " from " + startPosition + " to " + endPosition;
         broadcast(message, gameID, authToken);
     }
 
-    private void resign(ResignCommand action) throws DataAccessException {
+    private void resign(ResignCommand action) throws DataAccessException, SQLException {
         int gameID = action.getGameID();
         String authToken = action.getAuthToken();
         String username = authDAO.findToken(authToken).getUserName();
@@ -199,6 +179,7 @@ public class WebSocketHandler {
         }
 
         gameData.getGameObject().setTeamTurn(null);
+        gameDAO.updateGame(gameData.getGameObject(), gameID);
         String message = username + " has resigned from the game. Opponent wins!";
         broadcast(message, gameID, authToken);
     }
@@ -216,24 +197,32 @@ public class WebSocketHandler {
         sendMessage(new Gson().toJson(error), session);
     }
 
-    private void broadcast(String message, int gameID, String currentAuth) {
-        List<String> tokens = userMap.get(gameID);
-        for(String storedAuth : tokens) {
-            if (!storedAuth.equals(currentAuth)) {
-                NotificationMessage notificationMessage = new NotificationMessage(message);
-                String notification = new Gson().toJson(notificationMessage);
-                sendMessage(notification, sessions.get(storedAuth));
+    private void broadcast(String message, int gameID, String excludedAuth) {
+        for (var authToken : sessions.keySet()) {
+            if (Objects.equals(sessions.get(authToken).gameID(), gameID) && !Objects.equals(authToken, excludedAuth)) {
+                try {
+                    var s = sessions.get(authToken).session();
+                    if (s.isOpen()) {
+                        s.getRemote().sendString(new Gson().toJson(new NotificationMessage(message)));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
-    private void loadBroadcast(int gameID, ChessGame game){
-        List<String> tokens = userMap.get(gameID);
-        for (String storedAuth : tokens) {
-            if (sessions.containsKey(storedAuth)) {
-                Session session = sessions.get(storedAuth);
-                LoadGameMessage loadGameMessage = new LoadGameMessage(game);
-                sendMessage(new Gson().toJson(loadGameMessage), session);
+    private void broadcastGame(int gameID, String excludedAuth, ChessGame game) {
+        for (var authToken : sessions.keySet()) {
+            if (Objects.equals(sessions.get(authToken).gameID(), gameID) && !Objects.equals(authToken, excludedAuth)) {
+                try {
+                    var s = sessions.get(authToken).session();
+                    if (s.isOpen()) {
+                        s.getRemote().sendString(new Gson().toJson(new LoadGameMessage(game)));
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

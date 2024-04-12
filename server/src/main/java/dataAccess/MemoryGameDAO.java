@@ -1,4 +1,5 @@
 package dataAccess;
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
@@ -34,5 +35,7 @@ public class MemoryGameDAO implements GameDAO {
     public void clearTokens() throws DataAccessException {
         gameMap.clear();
     }
+
+    public void updateGame(ChessGame game, int gameID) throws DataAccessException {}
 
 }

@@ -2,6 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.GameData;
 
 import java.sql.ResultSet;
@@ -110,6 +111,30 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    public void updateGame(ChessGame game, int gameID) throws DataAccessException, SQLException {
+        if (findGame(gameID) == null || game == null) {
+            throw new DataAccessException("Incorrect Game Information for Update");
+        }
+        try (var conn = DatabaseManager.getConnection()) {
+            String insertString = "SELECT gameID FROM game WHERE gameID=?";
+            try (var preparedStatement = conn.prepareStatement(insertString)) {
+                preparedStatement.setInt(1, gameID);
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        var updateString ="UPDATE game SET game=? WHERE gameID=?";
+                        try (var prepareUpdate = conn.prepareStatement(updateString)) {
+                            Gson gson = new GsonBuilder().serializeNulls().create();
+                            String gameJson = gson.toJson(game);
+                            prepareUpdate.setString(1, gameJson);
+                            prepareUpdate.setInt(2, gameID);
+                            prepareUpdate.executeUpdate();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void clearTokens() throws DataAccessException {
         var insertString = "TRUNCATE game";
         try (var conn = DatabaseManager.getConnection()) {
@@ -128,6 +153,7 @@ public class SQLGameDAO implements GameDAO {
             whiteUsername VARCHAR(255) DEFAULT NULL,
             blackUsername VARCHAR(255) DEFAULT NULL,
             gameName VARCHAR(255) NOT NULL,
+            game JSON,
             PRIMARY KEY (gameID)
             );
             """
