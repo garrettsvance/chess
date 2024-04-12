@@ -31,7 +31,7 @@ public class HttpCommunication {
     private WebSocketFacade ws;
     private GameData currentGame;
     private int currentGameID;
-    private String alphas = "abcdefgh";
+    private final String alphas = "abcdefgh";
     private ChessGame.TeamColor playerColor;
     private final String serverURL;
     private GameData[] gameList = null;

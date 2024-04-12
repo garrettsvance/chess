@@ -4,6 +4,7 @@ import chess.*;
 import com.google.gson.Gson;
 import dataAccess.*;
 import model.GameData;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
@@ -16,7 +17,6 @@ import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,11 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @WebSocket
 public class WebSocketHandler {
 
-    private AuthTokenDAO authDAO;
-    private GameDAO gameDAO;
+    private final AuthTokenDAO authDAO;
+    private final GameDAO gameDAO;
     private Session session;
 
-    private ConcurrentHashMap<String, WebSocketConnection> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocketConnection> sessions = new ConcurrentHashMap<>();
 
 
 
@@ -225,6 +225,11 @@ public class WebSocketHandler {
                 }
             }
         }
+    }
+
+    @OnWebSocketError
+    public void onWebsocketError(Throwable exception) {
+        exception.printStackTrace();
     }
 
 

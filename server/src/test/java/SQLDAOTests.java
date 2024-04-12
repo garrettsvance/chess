@@ -153,7 +153,7 @@ public class SQLDAOTests {
         var blackUsername = "username2";
         var gameName = "gameName";
 
-        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName);
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, null);
         gameDAO.insertGame(gameData);
 
         Assertions.assertEquals(gameDAO.findGame(gameID).getGameID(), gameData.getGameID());
@@ -167,7 +167,7 @@ public class SQLDAOTests {
         var whiteUsername = "username";
         var blackUsername = "username2";
 
-        var gameData = new GameData(gameID, whiteUsername, blackUsername, null);
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, null, null);
 
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.insertGame(gameData));
     }
@@ -181,7 +181,7 @@ public class SQLDAOTests {
         var blackUsername = "username2";
         var gameName = "gameName";
 
-        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName);
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, null);
         gameDAO.insertGame(gameData);
         int result = gameDAO.findGame(gameID).getGameID();
 
@@ -197,7 +197,7 @@ public class SQLDAOTests {
         var blackUsername = "username2";
         var gameName = "gameName";
 
-        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName);
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, null);
         gameDAO.insertGame(gameData);
 
         Assertions.assertNull(gameDAO.findGame(123));
@@ -208,8 +208,8 @@ public class SQLDAOTests {
     @DisplayName("FindAll Test - Positive")
     public void findAllGood() throws DataAccessException, SQLException {
 
-        var gameData = new GameData(12345, "username", "username2", "gameName");
-        var gameData2 = new GameData(123456, "username3", "username4", "gameName2");
+        var gameData = new GameData(12345, "username", "username2", "gameName", null);
+        var gameData2 = new GameData(123456, "username3", "username4", "gameName2", null);
 
         gameDAO.insertGame(gameData);
         var result = gameDAO.findAll();
@@ -226,8 +226,8 @@ public class SQLDAOTests {
     @DisplayName("FindAll Test - Negative")
     public void findAllBad() throws DataAccessException, SQLException {
 
-        var gameData = new GameData(12345, "username", "username2", "gameName");
-        var gameData2 = new GameData(123456, "username3", "username4", "gameName2");
+        var gameData = new GameData(12345, "username", "username2", "gameName", null);
+        var gameData2 = new GameData(123456, "username3", "username4", "gameName2", null);
 
         gameDAO.insertGame(gameData);
         gameDAO.insertGame(gameData2);
@@ -244,7 +244,7 @@ public class SQLDAOTests {
         String color = "white";
         int gameID = 123;
 
-        var gameData = new GameData(123, null, null, "gamename");
+        var gameData = new GameData(123, null, null, "gamename", null);
         gameDAO.insertGame(gameData);
 
         gameDAO.claimSpot(username, color, gameID);
@@ -262,7 +262,7 @@ public class SQLDAOTests {
         String color = "white";
         int gameID = 123;
 
-        var gameData = new GameData(123, null, null, "gamename");
+        var gameData = new GameData(123, null, null, "gamename", null);
         gameDAO.insertGame(gameData);
         Assertions.assertNotNull(gameDAO.findGame(gameID));
 
@@ -278,7 +278,7 @@ public class SQLDAOTests {
         var blackUsername = "username2";
         var gameName = "gameName";
 
-        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName);
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, null);
         gameDAO.insertGame(gameData);
         int result = gameDAO.findGame(gameID).getGameID();
 
