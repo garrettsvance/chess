@@ -3,7 +3,6 @@ package server;
 import SharedServices.*;
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -25,26 +24,26 @@ public class ServerFacade {
     }
 
 
-    public AuthData login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) {
         var request = new LoginRequest(user.getUserName(), user.getPassword(), user.getEmail());
         return this.makeRequest("POST", "/session", request, AuthData.class, null);
     }
 
-    public AuthData register(UserData user) throws DataAccessException {
+    public AuthData register(UserData user) {
         var request = new RegisterRequest(user.getUserName(), user.getPassword(), user.getEmail());
         return this.makeRequest("POST", "/user", request, AuthData.class, null);
     }
 
-    public void clearDatabase() throws DataAccessException {
+    public void clearDatabase() {
         this.makeRequest("DELETE", "/db", null, null, null);
     }
 
-    public void logout(AuthData authToken) throws DataAccessException {
+    public void logout(AuthData authToken) {
 
         this.makeRequest("DELETE", "/session", null, null, authToken);
     }
 
-    public ArrayList<GameData> listGames(AuthData authToken) throws DataAccessException {
+    public ArrayList<GameData> listGames(AuthData authToken) {
         record ListGamesResponse(ArrayList<GameData> games) {}
         ListGamesResponse response = this.makeRequest("GET", "/game", null, ListGamesResponse.class, authToken);
         if (response.games() == null) {
@@ -53,18 +52,18 @@ public class ServerFacade {
         return response.games();
     }
 
-    public GameData createGame(AuthData authToken, String gameName) throws DataAccessException {
+    public GameData createGame(AuthData authToken, String gameName) {
         var request = new CreateGameRequest(gameName, null, null);
         return this.makeRequest("POST", "/game", request, GameData.class, authToken);
     }
 
-    public ChessGame joinGame(AuthData authToken, String playerColor, Integer gameID) throws DataAccessException {
+    public ChessGame joinGame(AuthData authToken, String playerColor, Integer gameID) {
         String auth = authToken.getAuthToken();
         var request = new JoinGameRequest(playerColor, gameID, auth);
         return makeRequest("PUT", "/game", request, ChessGame.class, authToken);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws DataAccessException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) {
         try {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -82,7 +81,8 @@ public class ServerFacade {
             }
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage());
+            ex.printStackTrace();
+            return null;
         }
     }
 
