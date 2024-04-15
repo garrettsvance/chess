@@ -4,7 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import dataAccess.DataAccessException;
+
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -117,7 +117,7 @@ public class HttpCommunication {
             out.println();
             out.println();
             run();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             out.println("Login Failed: " + e.getMessage());
         }
     }
@@ -149,7 +149,7 @@ public class HttpCommunication {
                 postLoginChoice(menuNum, out);
             } while (menuNum != 2);
             run();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             out.println("Registration Failed: " + e.getMessage());
         }
 
@@ -160,7 +160,7 @@ public class HttpCommunication {
         try {
             game = null;
             server.logout(authData);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             out.println("Logout Failed: " + e.getMessage());
         }
     }
@@ -173,7 +173,7 @@ public class HttpCommunication {
         gameName = scanner.nextLine();
         try {
             server.createGame(authData, gameName);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             out.println("Create Game Failed: " + e.getMessage());
         }
     }
@@ -188,7 +188,7 @@ public class HttpCommunication {
                         ", White Username: " + game.getWhiteUsername() + ", Black Username: " + game.getBlackUsername()
                 );
             }
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             out.println("List Games Failed: " + e.getMessage());
         }
     }
