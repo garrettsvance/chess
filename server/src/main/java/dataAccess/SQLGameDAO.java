@@ -59,7 +59,7 @@ public class SQLGameDAO implements GameDAO {
 
     public Collection<GameData> findAll() throws DataAccessException, SQLException {
         var gameList = new ArrayList<GameData>();
-        var insertString = "SELECT gameID, whiteUsername, blackUsername, gameName FROM game";
+        var insertString = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game"; // added chessGame instead of game
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(insertString)) {
@@ -80,7 +80,7 @@ public class SQLGameDAO implements GameDAO {
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
         var gameName = rs.getString("gameName");
-        ChessGame gameObject = new Gson().fromJson(rs.getString("gameName"), ChessGame.class);
+        ChessGame gameObject = new Gson().fromJson(rs.getString("chessGame"), ChessGame.class);
         return new GameData(gameID, whiteUsername, blackUsername, gameName, gameObject);
     }
 
@@ -153,7 +153,7 @@ public class SQLGameDAO implements GameDAO {
             whiteUsername VARCHAR(255) DEFAULT NULL,
             blackUsername VARCHAR(255) DEFAULT NULL,
             gameName VARCHAR(255) NOT NULL,
-            game JSON,
+            chessGame JSON,
             PRIMARY KEY (gameID)
             );
             """

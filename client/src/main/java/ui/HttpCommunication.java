@@ -109,7 +109,7 @@ public class HttpCommunication {
             String authTokenString = response.getAuthToken();
             authData = new AuthData(authTokenString, username);
             do {
-                out.println("Success!");
+                //out.println("Success!");
                 menuUI.postLogin(out);
                 menuNum = scanner.nextInt();
                 postLoginChoice(menuNum, out);
